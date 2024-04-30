@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link href="styles.css" rel="stylesheet">
+    <title>Protein Content Checker</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mt-4">Protein Tracker</h1>
+        <select class="form-select" id="date"></select>
+        <div class="input-group mt-4 mb-4">
+            <input type="text" class="form-control" id="foodName" placeholder="Name of Food">
+            <input type="text" class="form-control" id="foodServing" placeholder="Number of Ounces">
+            <button class="btn btn-secondary" type="button" id="getNutrition">Get Protein Content</button>
+        </div>
+
+        <div id="nutritionalResult"></div>
+        <div id="dailyNutrition"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <script type="module">
+
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js';
+        import { getDatabase, ref, push, set, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js';  
+
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAX325MD2r1qGTOXaSDBvUPgRrKOYzasG4",
+            authDomain: "bones-2e7a7.firebaseapp.com",
+            projectId: "bones-2e7a7",
+            storageBucket: "bones-2e7a7.appspot.com",
+            messagingSenderId: "820204450490",
+            appId: "1:820204450490:web:fd928c5e2642bd7b6f8883",
+            measurementId: "G-RBW5MHXRDM",
+            databaseURL: "https://bones-2e7a7-default-rtdb.firebaseio.com/"
+        };
+
+        // Initialize Firebase app
+        const firebaseApp = initializeApp(firebaseConfig);
+
+        // Get a reference to the database service
+        const database = getDatabase(firebaseApp);
+        let date = formatDate(new Date())
+        let reference = ref(database, 'user/margaret/' + date);
+
+        // Add event listener to the select menu
+        document.getElementById('date').addEventListener("change", function() {
+            // Handle the change event here
+            const selectedOption = document.getElementById('date').value;
+            console.log("Selected option:", selectedOption);
+            date = document.getElementById('date').value;
+            reference = ref(database, 'user/margaret/' + date);
+            accessData()
+        });
+
+        // Function to store data in Firebase
+        function storeData(data) {
+            // Push data to a specific location in the database
+            // reference.set(data);
+            const newPostRef = push(reference);
+            set(newPostRef, data)
+            .then(() => {
+            // Data saved successfully!
+            console.log("Data Saved!")
+            })
+            .catch((error) => {
+            // The write failed...
+            console.log(error)
+            });
+        }
+
+        // Function to remove data from Firebase
+        function removeData(referencePath) {
+            // Get reference to the data to be removed
+            const dataRef = ref(database, referencePath);
+
+            // Remove the data
+            return remove(dataRef)
+                .then(() => {
+                    console.log('Data removed successfully');
+                })
+                .catch((error) => {
+                    console.error('Error removing data:', error);
+                });
+        }
+
+        function accessData() {
+            let calories = 0;
+            let protein = 0;
+            let dailyTotals = `<table class="table table-hover"><thead><tr><th scope="col">Item</th><th scope="col">Ounces</th><th scope="col">Protein</th><th scope="col">Calories</th><th>Delete</th></tr></thead>`
+            onValue(reference, (snapshot) => {
+                const data = snapshot.val();
+                
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        // console.log(`${data[key].food}`);
+                        dailyTotals += `<tr><td>${data[key].food}</td><td>${data[key].serving}</td><td>${data[key].protein}</td><td>${data[key].calories}</td><td><span data-id=${key} class="close">&times;</span></td></tr>`
+                        protein += parseInt(data[key].protein)
+                        calories += parseInt(data[key].calories)
+                    }
+                }
+                dailyTotals += `<tr><th>Daily Totals</td><td></th><th>` + protein + `</th><th>` + calories + `</th>`
+                dailyTotals += `</table>`
+                document.getElementById("dailyNutrition").innerHTML = dailyTotals
+
+                // Add event listener to close buttons
+                let closebtns = document.getElementsByClassName("close");
+                for (let i = 0; i < closebtns.length; i++) {
+                    closebtns[i].addEventListener("click", function() {
+                        const referencePath = `user/margaret/${date}/${this.dataset.id}`;
+                        // Remove data from Firebase
+                        removeData(referencePath)
+                            .then(() => {
+                                // Once data is successfully removed, update the UI
+                                accessData();
+                            });
+                        });
+                }
+
+            })
+            
+        }
+
+        accessData()
+
+        // Click event listener for the button
+        document.getElementById('getNutrition').addEventListener('click', async () => {
+            const foodName = document.getElementById('foodName').value;
+            const ounces = document.getElementById('foodServing').value;
+            const servingSize = 28.3495 * ounces; // Convert oz to grams
+            
+            try {
+                const nutritionalInfo = await fetchNutritionalInfo(foodName, servingSize);
+                if (nutritionalInfo) {
+                    // Store nutritional information in Firebase
+                    storeData({
+                        food: foodName.charAt(0).toUpperCase() + foodName.slice(1),
+                        protein: nutritionalInfo.protein.toFixed(),
+                        calories: nutritionalInfo.calories.toFixed(),
+                        serving: ounces
+                    });
+                    accessData()
+                } else {
+                    document.getElementById('nutritionalResult').innerText = 'Error fetching nutritional information.';
+                }
+            } catch (error) {
+                console.error('Error fetching nutritional information:', error);
+            }
+            document.getElementById('foodName').value = "";
+            document.getElementById('foodServing').value = ""
+        });
+
+        // Function to fetch nutritional information from USDA API
+
+            const apiKey = 'ay7l5f8rFfytKJXBzBjlxRWsZXpWfotBUc3JteGi'; 
+
+            async function fetchNutritionalInfo(foodName, servingSize) {
+            
+            const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(foodName)}&api_key=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.foods && data.foods.length > 0) {
+                    const foodId = data.foods[0].fdcId;
+                    return fetchNutrients(foodId, servingSize);
+                } else {
+                    throw new Error('Food not found.');
+                }
+            } catch (error) {
+                console.error('Error fetching food data:', error);
+                return null;
+            }
+        }
+
+        // Function to fetch nutrients from USDA API
+        async function fetchNutrients(foodId, servingSize) {
+            const apiKey = 'ay7l5f8rFfytKJXBzBjlxRWsZXpWfotBUc3JteGi'; 
+            const url = `https://api.nal.usda.gov/fdc/v1/food/${foodId}?api_key=${apiKey}`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.foodNutrients && data.foodNutrients.length > 0) {
+                    console.log(data.labelNutrients)
+                    const nutrients = {};
+                    data.foodNutrients.forEach(nutrient => {
+                        nutrients[nutrient.nutrient.name.toLowerCase()] = nutrient.amount;
+                    });
+                    // Calculate protein and calories based on serving size
+                    const proteinPer100g = nutrients.protein || 0;
+                    const proteinPerServing = (proteinPer100g / 100) * servingSize;
+                    const caloriesPer100g = nutrients.energy || 0; // Assuming energy represents calories
+                    const caloriesPerServing = (caloriesPer100g / 100) * servingSize;
+                    return { protein: proteinPerServing, calories: caloriesPerServing };
+                } else {
+                    throw new Error('Nutritional information not found.');
+                }
+            } catch (error) {
+                console.error('Error fetching nutrients:', error);
+                return null;
+            }
+        }
+
+        // Function to generate dates for a specific range
+        function generateDates(startDate) {
+            const dates = [];
+            let currentDate = startDate;
+
+            for (let i = 0; i < 7; i++) {
+                dates.push(new Date(currentDate));
+                currentDate.setDate(currentDate.getDate() - 1);
+            }
+            return dates;
+        }
+
+        // Function to format date as "Tuesday, Apr 30, 2024"
+        function formatDate(date) {
+            const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        // Get the dropdown element
+        const dateDropdown = document.getElementById("date");
+
+        // Generate dates for a specific range (e.g., a month)
+        const startDate = new Date();
+        const dates = generateDates(startDate);
+
+        // Populate the dropdown with formatted dates
+        dates.forEach(date => {
+            const option = document.createElement("option");
+            option.textContent = formatDate(date);
+            dateDropdown.appendChild(option);
+        });
+
+    </script>
+</body>
+</html>
