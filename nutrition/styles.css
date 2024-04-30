@@ -1,0 +1,21 @@
+#foodName, #foodServing {
+    width: 200px;
+}
+
+.container {
+    width: 60%;
+}
+
+.close {
+    padding: 12px 20px; 
+    font-weight: bold;
+}
+
+.close:hover {
+    background: #bbb;
+}
+
+#date {
+    width: 250px;
+    margin: auto;
+}
