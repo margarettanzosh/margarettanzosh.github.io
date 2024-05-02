@@ -20,6 +20,28 @@
         <div id="nutritionalResult"></div>
         <div id="dailyNutrition"></div>
     </div>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="foodChoiceModal" tabindex="-1" aria-labelledby="foodChoiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="foodChoiceModalLabel">Choose One</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal-insert">
+                <!-- Table goes here -->
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary">Select</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script type="module">
 
@@ -46,6 +68,14 @@
         let date = formatDate(new Date())
         let reference = ref(database, 'user/margaret/' + date);
 
+        // API Key for USDA Data
+        const apiKey = 'ay7l5f8rFfytKJXBzBjlxRWsZXpWfotBUc3JteGi'; 
+
+        // Create modal variable
+        const myModal = new bootstrap.Modal(document.getElementById('foodChoiceModal'), {
+            backdrop: false
+        })
+
         // Add event listener to the select menu
         document.getElementById('date').addEventListener("change", function() {
             // Handle the change event here
@@ -59,7 +89,6 @@
         // Function to store data in Firebase
         function storeData(data) {
             // Push data to a specific location in the database
-            // reference.set(data);
             const newPostRef = push(reference);
             set(newPostRef, data)
             .then(() => {
@@ -83,21 +112,21 @@
                     console.log('Data removed successfully');
                 })
                 .catch((error) => {
-                    console.error('Error removing data:', error);
+                    console.log('Error removing data:', error);
                 });
         }
 
         function accessData() {
             let calories = 0;
             let protein = 0;
-            let dailyTotals = `<table class="table table-hover"><thead><tr><th scope="col">Item</th><th scope="col">Ounces</th><th scope="col">Protein</th><th scope="col">Calories</th><th>Delete</th></tr></thead>`
+            let dailyTotals = `<table class="table table-hover"><thead><tr><th scope="col">Item Name</th><th scope="col">Portion (oz)</th><th scope="col">Protein (g)</th><th scope="col">Calories (kcal)</th><th>Delete</th></tr></thead>`
             onValue(reference, (snapshot) => {
                 const data = snapshot.val();
                 
                 for (const key in data) {
                     if (data.hasOwnProperty(key)) {
                         // console.log(`${data[key].food}`);
-                        dailyTotals += `<tr><td>${data[key].food}</td><td>${data[key].serving}</td><td>${data[key].protein}</td><td>${data[key].calories}</td><td><span data-id=${key} class="close">&times;</span></td></tr>`
+                        dailyTotals += `<tr><td class="text-truncate" style="max-width: 150px;">${data[key].food}</td><td>${data[key].serving}</td><td>${data[key].protein}</td><td>${data[key].calories}</td><td><span data-id=${key} class="close">&times;</span></td></tr>`
                         protein += parseInt(data[key].protein)
                         calories += parseInt(data[key].calories)
                     }
@@ -130,79 +159,88 @@
         document.getElementById('getNutrition').addEventListener('click', async () => {
             const foodName = document.getElementById('foodName').value;
             const ounces = document.getElementById('foodServing').value;
-            const servingSize = 28.3495 * ounces; // Convert oz to grams
+            // const servingSize = 28.3495 * ounces; // Convert oz to grams
             
             try {
-                const nutritionalInfo = await fetchNutritionalInfo(foodName, servingSize);
-                if (nutritionalInfo) {
-                    // Store nutritional information in Firebase
-                    storeData({
-                        food: foodName.charAt(0).toUpperCase() + foodName.slice(1),
-                        protein: nutritionalInfo.protein.toFixed(),
-                        calories: nutritionalInfo.calories.toFixed(),
-                        serving: ounces
-                    });
-                    accessData()
-                } else {
-                    document.getElementById('nutritionalResult').innerText = 'Error fetching nutritional information.';
-                }
-            } catch (error) {
-                console.error('Error fetching nutritional information:', error);
+                // const nutritionalInfo = await fetchNutritionalInfo(foodName, servingSize); // doesn't wait
+                const nutritionalInfo = await fetchNutritionalInfo(foodName, ounces);
+            }   
+            catch (error) {
+                console.log('Line 168: Error fetching nutritional information:', error);
             }
             document.getElementById('foodName').value = "";
             document.getElementById('foodServing').value = ""
         });
 
         // Function to fetch nutritional information from USDA API
-
-            const apiKey = 'ay7l5f8rFfytKJXBzBjlxRWsZXpWfotBUc3JteGi'; 
-
-            async function fetchNutritionalInfo(foodName, servingSize) {
-            
+        async function fetchNutritionalInfo(foodName, ounces) {
             const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(foodName)}&api_key=${apiKey}`;
 
             try {
                 const response = await fetch(url);
                 const data = await response.json();
+
                 if (data.foods && data.foods.length > 0) {
-                    const foodId = data.foods[0].fdcId;
-                    return fetchNutrients(foodId, servingSize);
-                } else {
-                    throw new Error('Food not found.');
-                }
-            } catch (error) {
-                console.error('Error fetching food data:', error);
-                return null;
+
+                    let foodTable = `<table class="table table-hover table-sm">`;
+                    for (let i = 0; i < data.foods.length; i++) {
+                        foodTable += `<tr class="foodIndex"><td>${data.foods[i].fdcId}</td><td>${data.foods[i].description}</td><td>${data.foods[i].brandName || data.foods[i].additionalDescriptions}</td></tr>`
+                    }
+                    foodTable += `</table>`;
+                    document.getElementById('modal-insert').innerHTML = foodTable;
+                    myModal.show();
+
+                    let modalRows = document.getElementsByClassName("foodIndex");
+                    for (let i = 0; i < modalRows.length; i++) {
+                        modalRows[i].addEventListener("click", function() {
+                            myModal.hide();
+                            fetchNutrients(data.foods[i].fdcId, ounces);
+                        });
+                    }
+                } 
+            }
+            catch (error) {
+                    console.log('Line 203: Error fetching food data:', error);
             }
         }
 
-        // Function to fetch nutrients from USDA API
-        async function fetchNutrients(foodId, servingSize) {
-            const apiKey = 'ay7l5f8rFfytKJXBzBjlxRWsZXpWfotBUc3JteGi'; 
-            const url = `https://api.nal.usda.gov/fdc/v1/food/${foodId}?api_key=${apiKey}`;
+        // Function to fetch nutrients from USDA API and save to db
+        async function fetchNutrients(foodId, ounces) {
+            const url = `https://api.nal.usda.gov/fdc/v1/food/${foodId}?format=abridged&nutrients=203&nutrients=208&api_key=${apiKey}`;
             
             try {
                 const response = await fetch(url);
                 const data = await response.json();
+            
                 if (data.foodNutrients && data.foodNutrients.length > 0) {
-                    console.log(data.labelNutrients)
                     const nutrients = {};
                     data.foodNutrients.forEach(nutrient => {
-                        nutrients[nutrient.nutrient.name.toLowerCase()] = nutrient.amount;
+                        nutrients[nutrient.name.toLowerCase()] = nutrient.amount;
                     });
+
                     // Calculate protein and calories based on serving size
+                    const servingSize = 28.3495 * ounces; // Convert oz to grams
                     const proteinPer100g = nutrients.protein || 0;
                     const proteinPerServing = (proteinPer100g / 100) * servingSize;
                     const caloriesPer100g = nutrients.energy || 0; // Assuming energy represents calories
                     const caloriesPerServing = (caloriesPer100g / 100) * servingSize;
-                    return { protein: proteinPerServing, calories: caloriesPerServing };
-                } else {
-                    throw new Error('Nutritional information not found.');
+                 
+                    storeData({
+                        food: data.description,
+                        protein: proteinPerServing.toFixed(),
+                        calories: caloriesPerServing.toFixed(),
+                        serving: ounces
+                    });
+                    accessData()
+
+                    } else {
+                        document.getElementById('nutritionalResult').innerText = 'Error fetching nutritional information.';
+                    }
+                } 
+                catch {
+                    throw new Error('Line 274: Nutritional information not found.');
                 }
-            } catch (error) {
-                console.error('Error fetching nutrients:', error);
-                return null;
-            }
+        
         }
 
         // Function to generate dates for a specific range
@@ -236,6 +274,8 @@
             option.textContent = formatDate(date);
             dateDropdown.appendChild(option);
         });
+
+
 
     </script>
 </body>
