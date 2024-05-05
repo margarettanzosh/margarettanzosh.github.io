@@ -464,9 +464,10 @@
 
         // Get daily data from db and display
         function accessData() {
-            let calories = 0;
-            let protein = 0;
+            
             onValue(reference, (snapshot) => {
+                let calories = 0;
+                let protein = 0;
                 let dailyTotals = `<table class="table table-hover table-sm"><thead><tr><th scope="col">Item Name</th><th scope="col" class="text-end">Amt</th><th scope="col" class="text-end">Protein</th><th scope="col" class="text-end">Cal</th></tr></thead>`
 
                 const data = snapshot.val();
