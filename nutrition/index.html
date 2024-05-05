@@ -12,16 +12,16 @@
         <h1 class="text-center mt-4">Protein Tracker</h1>
         <select class="form-select" id="date"></select>
         <div class="input-group mt-4 mb-4">
-            <input type="text" class="form-control" id="foodName" placeholder="Name of Food">
-            <input type="text" class="form-control" id="foodServing" placeholder="Number of Ounces">
-            <button class="btn btn-secondary" type="button" id="getNutrition">Get Protein Content</button>
+            <input list="customFoods" type="search" class="form-control" id="customFoodChoice" placeholder="Search for your food" autocomplete="off" name="customFoodChoice" />
+            <button class="btn btn-outline-secondary" type="button" id="addFoodHere">Add Food</button>
+            <button class="btn btn-outline-secondary" type="button" id="getNutrition">Search USDA</button>
         </div>
 
         <div id="nutritionalResult"></div>
         <div id="dailyNutrition"></div>
     </div>
     
-    <!-- Modal -->
+    <!-- Modal for table of food choices-->
     <div class="modal fade" id="foodChoiceModal" tabindex="-1" aria-labelledby="foodChoiceModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -34,14 +34,128 @@
             </div>
             <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-secondary">Select</button>
             </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding your own food-->
+    <div class="modal fade" id="addFoodModal" tabindex="-1" aria-labelledby="addFoodModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="addFoodModalLabel">Your New Food</h5>
+            <button type="button" id="closeNewFoodModal" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="mt-4">
+
+                <div class="row g-3 align-items-center mb-3">
+                    <div class="col-sm-3">
+                        <label for="newFoodName" class="col-form-label">Name of Food</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input type="text" id="newFoodName" class="form-control">
+                    </div>
+                   
+                </div>
+
+                <div class="row g-3 align-items-center mb-3">
+                    <div class="col-sm-3">
+                        <label for="newFoodServing" class="col-form-label">Serving</label>
+                    </div>
+                    <div class="col-sm-5">
+                        <input type="number" id="newFoodServing" class="form-control">
+                    </div>
+                    <div class="col-sm-4">
+                        <span id="servingHelpInline" class="form-text">
+                        Number of Units
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row g-3 align-items-center mb-3">
+                    <div class="col-sm-3">
+                        <label for="newFoodUnit" class="col-form-label">Serving Unit</label>
+                    </div>
+                    <div class="col-8">
+                        <select id="newFoodUnit" class="form-select" aria-label="Serving Unit">
+                            <option value="g">Gram</option>
+                            <option value="oz">Ounce</option>
+                            <option value="tbsp">Tablespoon</option>
+                            <option value="tsp">Teaspoon</option>
+                            <option value="c">Cup</option>
+                        </select>
+                    </div>
+                    
+                </div>
+
+                <div class="row g-3 align-items-center mb-3">
+                    <div class="col-sm-3">
+                        <label for="newFoodProtein" class="col-form-label">Protein (g)</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input type="number" id="newFoodProtein" class="form-control">
+                    </div>
+                
+                </div>
+
+                <div class="row g-3 align-items-center mb-3">
+                    <div class="col-sm-3">
+                        <label for="newFoodCalories" class="col-form-label">Calories</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input type="number" id="newFoodCalories" class="form-control">
+                    </div>
+                    
+                </div>
+            
+                <div class="modal-footer mb-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="saveNewFood">Save</button>
+                </div>
+            </div>
+            
+        </div>
+        </div>
+    </div>
+
+    <!-- Modal for selecting your portion of your own food-->
+    <div class="modal fade" id="chooseAmtModal" tabindex="-1" aria-labelledby="chooseAmtModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="chooseAmtModalLabel">Food Item Goes Here</h5>
+            <button type="button" id="closeSelectModal" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="portion">
+
+
+                <div class="input-group mt-4 mb-4">
+                    <input type="number" class="form-control" id="foodServing" placeholder="1">
+                    <select id="chooseFoodUnit" class="form-select" aria-label="Choose Serving Unit">
+                        <option value="g">Gram</option>
+                        <option value="oz">Ounce</option>
+                        <option value="tbsp">Tablespoon</option>
+                        <option value="tsp">Teaspoon</option>
+                        <option value="c">Cup</option>
+                    </select>
+                </div>
+        
+                <div><p>Protein: <span id="chooseProtein">2</span></p></div>
+                <div><p >Calories: <span id="chooseCalories">2</span></p></div>
+            
+                <div class="modal-footer mb-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="chooseSave">Log Food</button>
+                    <div id="saveUSDAButton"></div>
+                </div>
+            </div>
+            
         </div>
         </div>
     </div>
     
 
 
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script type="module">
 
@@ -71,26 +185,98 @@
         // API Key for USDA Data
         const apiKey = 'ay7l5f8rFfytKJXBzBjlxRWsZXpWfotBUc3JteGi'; 
 
+        // Global variables
+        let foodName, calories, protein, serving, unit, newFoodName, newUnit, newProtein, newCalories, newServing
+
         // Create modal variable
         const myModal = new bootstrap.Modal(document.getElementById('foodChoiceModal'), {
             backdrop: false
         })
 
-        // Add event listener to the select menu
-        document.getElementById('date').addEventListener("change", function() {
+        // Modal variable for saving food item
+        const newFoodModal = new bootstrap.Modal(document.getElementById('addFoodModal'), {
+            backdrop: false
+        })
+
+        // Modal variable to choose food units
+        const newChooseModal = new bootstrap.Modal(document.getElementById('chooseAmtModal'), {
+            backdrop: false
+        })
+
+        // Add event listener to the date select menu
+        document.getElementById('date').addEventListener('change', function() {
             // Handle the change event here
             const selectedOption = document.getElementById('date').value;
-            console.log("Selected option:", selectedOption);
             date = document.getElementById('date').value;
             reference = ref(database, 'user/margaret/' + date);
             accessData()
         });
 
-        // Function to store data in Firebase
+        // Add event listener to clear food choice when closing portion modal
+        document.getElementById('closeSelectModal').addEventListener('click', function() {
+            document.getElementById('customFoodChoice').value = '';
+        })
+
+
+        // Add event listener to add new food button on opening page
+        document.getElementById('addFoodHere').addEventListener('click', function() {
+            newFoodModal.show()
+        })
+
+
+        // Add event listener to save button on new food modal
+        document.getElementById('saveNewFood').addEventListener('click', function() {
+            foodName = document.getElementById('newFoodName').value;
+            serving = document.getElementById('newFoodServing').value;
+            unit = document.getElementById('newFoodUnit').value;
+            protein = document.getElementById('newFoodProtein').value;
+            calories = document.getElementById('newFoodCalories').value;
+            addFood({
+                        food: foodName,
+                        protein: protein,
+                        calories: calories,
+                        serving: serving,
+                        unit: unit
+                    });
+            clearNewFoods();       
+        })
+
+        document.getElementById('closeNewFoodModal').addEventListener('click', function() {
+            clearNewFoods();
+            document.getElementById('customFoodChoice').value = '';
+        })
+
+        // Function to cleary new food modal
+        function clearNewFoods() {
+            document.getElementById('newFoodName').value = '';
+            document.getElementById('newFoodServing').value = '';
+            document.getElementById('newFoodUnit').value = '';
+            document.getElementById('newFoodProtein').value = '';
+            document.getElementById('newFoodCalories').value = '';        
+        }
+
+        
+        // Function to store food log data in Firebase
         function storeData(data) {
             // Push data to a specific location in the database
+            reference = ref(database, 'user/margaret/' + date);
             const newPostRef = push(reference);
             set(newPostRef, data)
+            .then(() => {
+            // Data saved successfully!
+            console.log("Data Saved!")
+            })
+            .catch((error) => {
+            // The write failed...
+            console.log(error)
+            });
+        }
+
+         // Function to store your own food item in database
+         function addFood(item) {
+            const foodRef = ref(database, 'foodItems');
+            const newFoodRef = push(foodRef);
+            set(newFoodRef, item)
             .then(() => {
             // Data saved successfully!
             console.log("Data Saved!")
@@ -104,7 +290,7 @@
         // Function to remove data from Firebase
         function removeData(referencePath) {
             // Get reference to the data to be removed
-            const dataRef = ref(database, referencePath);
+            let dataRef = ref(database, referencePath);
 
             // Remove the data
             return remove(dataRef)
@@ -116,22 +302,187 @@
                 });
         }
 
+        // Function to create datalist for your own food items
+        function accessCustomFood() {
+            const foodRef = ref(database, 'foodItems');
+            onValue(foodRef, (snapshot) => {
+                const data = snapshot.val();
+                let foodTable = `<datalist id="customFoods">`;
+
+                for (const key in data) {
+                    foodTable += `<option class="newFoodIndex" data-key="${key}" value="${data[key].food}"></option>`
+                }
+                foodTable += `</datalist>`;
+                document.getElementById('customFoodChoice').innerHTML = foodTable;
+
+                $('#customFoodChoice').keyup(function(event) {
+                    foodName = $(this).val();
+                    let key = $('#customFoods [value="' + foodName + '"]').data('key');
+                    if (key) {
+                        document.getElementById('chooseAmtModalLabel').innerHTML = foodName;
+                        newChooseModal.show()
+
+                        const foodRef = ref(database, 'foodItems' + '/' + key);
+
+                        onValue(foodRef, (snapshot) => {
+                            const data = snapshot.val();
+                            console.log(data)
+                            document.getElementById('chooseProtein').innerHTML = data.protein + " g";
+                            document.getElementById('chooseCalories').innerHTML = data.calories + " cal"
+
+                            // Change select menu
+                            $("#chooseFoodUnit").val(data.unit);
+
+                            document.getElementById("foodServing").value = data.serving;
+                            serving = document.getElementById("foodServing").value;
+                            protein = data.protein;
+                            calories = data.calories;
+                            newProtein = (serving / data.serving * data.protein).toFixed();
+                            newCalories = (serving / data.serving * data.calories).toFixed();
+                            unit = data.unit;       
+                        })
+                    }
+                });
+            }
+        )}
+
+        // Event listener to change protein and calories when serving amount changes
+        document.getElementById("foodServing").addEventListener("change", function() {
+            newServing = document.getElementById("foodServing").value;
+            
+            newProtein = (newServing / serving * protein).toFixed();
+            newCalories = (newServing / serving * calories).toFixed();
+
+            document.getElementById('chooseProtein').innerHTML = newProtein + " g";
+            document.getElementById('chooseCalories').innerHTML = newCalories + " cal";
+            protein = newProtein;
+            calories = newCalories;
+            serving = newServing;
+        }) 
+        
+        // Event listener to change serving size when unit changes
+        document.getElementById('chooseFoodUnit').addEventListener("change", function() {
+            newUnit = document.getElementById('chooseFoodUnit').value;
+            serving = document.getElementById("foodServing").value;
+
+            if (unit == 'g') {
+                if (newUnit == 'oz') {
+                    newServing = serving / 28.35;
+                }
+                else if (newUnit == 'c') {
+                    newServing = serving / 237;
+                }
+                else if (newUnit == 'tbsp') {
+                    newServing = serving / 4.18;
+                }
+                else if (newUnit == 'tsp') {
+                    newServing = serving / 4.725;
+                }
+            }
+
+            if (unit == 'oz') {
+                if (newUnit == 'g') {
+                    newServing = serving * 28.35;
+                }
+                else if (newUnit == 'c') {
+                    newServing = serving / 8;
+                }
+                else if (newUnit == 'tbsp') {
+                    newServing = serving * 2;
+                }
+                else if (newUnit == 'tsp') {
+                    newServing = serving * 6;
+                }
+            }
+
+            if (unit == 'c') {
+                if (newUnit == 'g') {
+                    newServing = serving * 237; // ???
+                }
+                else if (newUnit == 'oz') {
+                    newServing = serving * 8;
+                }
+                else if (newUnit == 'tbsp') {
+                    newServing = serving * 16;
+                }
+                else if (newUnit == 'tsp') {
+                    newServing = serving * 48;
+                }
+            }
+
+            if (unit == 'tbsp') {
+                if (newUnit == 'g') {
+                    newServing = serving * 14.175; // ???
+                }
+                else if (newUnit == 'oz') {
+                    newServing = serving / 2;
+                }
+                else if (newUnit == 'c') {
+                    newServing = serving / 16;
+                }
+                else if (newUnit == 'tsp') {
+                    newServing = serving * 3;
+                }
+            }
+
+            if (unit == 'tsp') {
+                if (newUnit == 'g') {
+                    newServing = serving * 5.69; // ???
+                }
+                else if (newUnit == 'oz') {
+                    newServing = serving / 6;
+                }
+                else if (newUnit == 'c') {
+                    newServing = serving / 48;
+                }
+                else if (newUnit == 'tsp') {
+                    newServing = serving / 3;
+                }
+            }
+
+            serving = newServing;
+            unit = newUnit;
+            document.getElementById('foodServing').value = serving;
+        })
+
+        // Event listener to save new food
+        document.getElementById('chooseSave').addEventListener('click', function () {
+  
+            storeData({
+                food: foodName,
+                protein: protein,
+                calories: calories,
+                serving: serving,
+                unit: unit
+            });
+            document.getElementById('customFoodChoice').value = "";
+            accessData()
+        })
+  
+
+        accessCustomFood() // remove later?
+
+        // Get daily data from db and display
         function accessData() {
             let calories = 0;
             let protein = 0;
-            let dailyTotals = `<table class="table table-hover"><thead><tr><th scope="col">Item Name</th><th scope="col">Portion (oz)</th><th scope="col">Protein (g)</th><th scope="col">Calories (kcal)</th><th>Delete</th></tr></thead>`
             onValue(reference, (snapshot) => {
+                let dailyTotals = `<table class="table table-hover table-sm"><thead><tr><th scope="col">Item Name</th><th scope="col" class="text-end">Amt</th><th scope="col" class="text-end">Protein</th><th scope="col" class="text-end">Cal</th></tr></thead>`
+
                 const data = snapshot.val();
                 
                 for (const key in data) {
                     if (data.hasOwnProperty(key)) {
-                        // console.log(`${data[key].food}`);
-                        dailyTotals += `<tr><td class="text-truncate" style="max-width: 150px;">${data[key].food}</td><td>${data[key].serving}</td><td>${data[key].protein}</td><td>${data[key].calories}</td><td><span data-id=${key} class="close">&times;</span></td></tr>`
+                        let units = "oz"
+                        if (data[key].unit) {
+                            units = data[key].unit;
+                        }
+                        dailyTotals += `<tr><td class="text-truncate">${data[key].food}</td><td class="text-end">${data[key].serving} ${units}</td><td class="text-end">${data[key].protein} g</td><td class="text-end">${data[key].calories} cal</td><td class="text-end" style="max-width: 50px;"><span data-id=${key} class="close">&times;</span></td></tr>`
                         protein += parseInt(data[key].protein)
                         calories += parseInt(data[key].calories)
                     }
                 }
-                dailyTotals += `<tr><th>Daily Totals</td><td></th><th>` + protein + `</th><th>` + calories + `</th>`
+                dailyTotals += `<tr><th>Daily Totals</td><td></th><th class="text-end">` + protein + ` g </th><th class="text-end">` + calories + ` cal</th>`
                 dailyTotals += `</table>`
                 document.getElementById("dailyNutrition").innerHTML = dailyTotals
 
@@ -148,32 +499,27 @@
                             });
                         });
                 }
-
             })
             
         }
 
         accessData()
 
-        // Click event listener for the button
+        // Click event listener for the button ?????
         document.getElementById('getNutrition').addEventListener('click', async () => {
-            const foodName = document.getElementById('foodName').value;
-            const ounces = document.getElementById('foodServing').value;
-            // const servingSize = 28.3495 * ounces; // Convert oz to grams
+            foodName = document.getElementById('customFoodChoice').value;
             
             try {
-                // const nutritionalInfo = await fetchNutritionalInfo(foodName, servingSize); // doesn't wait
-                const nutritionalInfo = await fetchNutritionalInfo(foodName, ounces);
+                const nutritionalInfo = await fetchNutritionalInfo(foodName);
             }   
             catch (error) {
                 console.log('Line 168: Error fetching nutritional information:', error);
             }
-            document.getElementById('foodName').value = "";
-            document.getElementById('foodServing').value = ""
+            document.getElementById('customFoodChoice').value = "";
         });
 
         // Function to fetch nutritional information from USDA API
-        async function fetchNutritionalInfo(foodName, ounces) {
+        async function fetchNutritionalInfo(foodName) {
             const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(foodName)}&api_key=${apiKey}`;
 
             try {
@@ -182,9 +528,9 @@
 
                 if (data.foods && data.foods.length > 0) {
 
-                    let foodTable = `<table class="table table-hover table-sm">`;
+                    let foodTable = `<table class="table table-hover table-sm">`;  
                     for (let i = 0; i < data.foods.length; i++) {
-                        foodTable += `<tr class="foodIndex"><td>${data.foods[i].fdcId}</td><td>${data.foods[i].description}</td><td>${data.foods[i].brandName || data.foods[i].additionalDescriptions}</td></tr>`
+                        foodTable += `<tr class="foodIndex"><td>${data.foods[i].description}</td><td>${data.foods[i].brandName || data.foods[i].additionalDescriptions}</td></tr>`
                     }
                     foodTable += `</table>`;
                     document.getElementById('modal-insert').innerHTML = foodTable;
@@ -194,7 +540,8 @@
                     for (let i = 0; i < modalRows.length; i++) {
                         modalRows[i].addEventListener("click", function() {
                             myModal.hide();
-                            fetchNutrients(data.foods[i].fdcId, ounces);
+
+                            fetchNutrients(data.foods[i].fdcId);
                         });
                     }
                 } 
@@ -205,7 +552,7 @@
         }
 
         // Function to fetch nutrients from USDA API and save to db
-        async function fetchNutrients(foodId, ounces) {
+        async function fetchNutrients(foodId) {
             const url = `https://api.nal.usda.gov/fdc/v1/food/${foodId}?format=abridged&nutrients=203&nutrients=208&api_key=${apiKey}`;
             
             try {
@@ -219,26 +566,53 @@
                     });
 
                     // Calculate protein and calories based on serving size
-                    const servingSize = 28.3495 * ounces; // Convert oz to grams
+                    // let ounces = 1; // assumne one ounce serving to start
+                    // const servingSize = 28.3495 * ounces; // Convert oz to grams
                     const proteinPer100g = nutrients.protein || 0;
-                    const proteinPerServing = (proteinPer100g / 100) * servingSize;
+                    // const proteinPerServing = (proteinPer100g / 100) * servingSize;
                     const caloriesPer100g = nutrients.energy || 0; // Assuming energy represents calories
-                    const caloriesPerServing = (caloriesPer100g / 100) * servingSize;
-                 
-                    storeData({
-                        food: data.description,
-                        protein: proteinPerServing.toFixed(),
-                        calories: caloriesPerServing.toFixed(),
-                        serving: ounces
-                    });
-                    accessData()
+                    // const caloriesPerServing = (caloriesPer100g / 100) * servingSize;
+                    serving = 100;
+
+                    // Open modal to modify servings here
+                    document.getElementById('saveUSDAButton').innerHTML = `<button type="button" id="saveUSDAFood" class="btn btn-secondary">Save to My Foods</button>`
+                    newChooseModal.show()
+
+                    document.getElementById('chooseProtein').innerHTML = proteinPer100g + " g";
+                    document.getElementById('chooseCalories').innerHTML = caloriesPer100g + " cal"
+
+                    // Change select menu
+                    $("#chooseFoodUnit").val("g");
+
+                    document.getElementById("foodServing").value = serving;
+                    // originalServing = document.getElementById("foodServing").value;
+                    protein = proteinPer100g;
+                    calories = caloriesPer100g;
+                    unit = 'g';
+                    document.getElementById('chooseAmtModalLabel').innerHTML = data.description;
+                    foodName = data.description
+
+                    // Event listener to save USDA food
+                    document.getElementById('saveUSDAFood').addEventListener('click', function() {
+                        newChooseModal.hide()
+                        newFoodModal.show()
+                        document.getElementById('saveUSDAButton').innerHTML = '';
+
+                        document.getElementById('newFoodName').value = foodName;
+                        document.getElementById('newFoodServing').value = serving;
+                        document.getElementById('newFoodUnit').value = unit;
+                        document.getElementById('newFoodProtein').value = protein;
+                        document.getElementById('newFoodCalories').value = calories;
+                        
+                    })
+            
 
                     } else {
                         document.getElementById('nutritionalResult').innerText = 'Error fetching nutritional information.';
                     }
                 } 
                 catch {
-                    throw new Error('Line 274: Nutritional information not found.');
+                    throw new Error('Nutritional information not found.');
                 }
         
         }

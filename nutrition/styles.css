@@ -25,3 +25,30 @@
     white-space: normal;
     height:auto;
 }
+
+.text-truncate {
+    overflow: hidden;
+    max-width: 200px;
+}
+
+.col-form-label {
+    margin-left: 16px;
+    font-size: 0.9em;
+}
+
+#customFoodChoice {
+    min-width: 50%;
+}
+
+#getNutrition, #addFoodHere {
+    width: 150px;
+}
+
+.portion {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.btn-outline-secondary {
+    border-color: #CFD4D9;
+}
