@@ -5,10 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link href="styles.css" rel="stylesheet">
+    
     <title>Protein Content Checker</title>
 </head>
 <body>
     <div class="container">
+
+        <!-- <small>Hello Margaret</small> -->
+        <!-- <a class="text-muted fs-6" style="text-decoration: none;" id="signOut" href="#!">Log Out</a> -->
+        <!-- <button type="button" id="signOut" class="btn btn-outline-secondary btn-sm">Log Out</button> -->
+        <ul class="nav justify-content-end">
+            <!-- <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Active</a>
+            </li> -->
+            <li class="nav-item">
+              <a id="signOut" class="nav-link text-muted" href="#">Log Out</a>
+            </li>
+          </ul>
+
         <h1 class="text-center mt-4">Protein Tracker</h1>
         <select class="form-select" id="date"></select>
         <div class="input-group mt-4 mb-4">
@@ -152,6 +166,81 @@
         </div>
         </div>
     </div>
+
+
+   <!-- Modal for Log In -->
+    <div class="modal fade" id="logInModal" tabindex="-1" aria-labelledby="logInModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen" style="background-color: #eee; padding: 100px;">
+            <div class="modal-content" class="pl-5 pr-5">
+                <h4 class="pt-5 pb-0 text-center" id="logInForm">Welcome to Protein Tracker</h4>
+                
+                <!-- <button type="button" id="closeLogInModal" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                <div style="padding: 40px;">
+                    <form autocomplete="off" id="login">
+                        <p>Please login to your account</p>
+
+                        <div class="form-outline mb-4">
+                            <input type="email" id="email" class="form-control" autocomplete="off"/>
+                            <label class="form-label" for="email">Email</label>
+                        </div>
+
+                        <div class="form-outline mb-4">
+                            <input type="password" id="pw" autocomplete="off" class="form-control" />
+                            <label class="form-label" for="pw">Password</label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-block text-light fa-lg gradient-custom-2" id="enterEmailPassword" type="button">Log in</button>
+                            <a class="text-muted text-center mb-4" style="text-decoration: none;" href="#!">Forgot password?</a>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-center pb-4">
+                            <p class="me-2 mt-3">Don't have an account?</p>
+                            <button type="button" id="register" class="btn btn-outline-danger">Create new</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Register -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen" style="background-color: #eee; padding: 100px;">
+            <div class="modal-content" class="pl-5 pr-5">
+                <h4 class="pt-5 pb-0 text-center" id="logInForm">New Account</h4>
+                
+                <div style="padding: 40px;">
+                    <form autocomplete="off" id="login">
+                        <p>Please complete to create your account</p>
+
+                        <div class="form-outline mb-4">
+                            <input type="text" id="usernameNew" class="form-control" autocomplete="off"/>
+                            <label class="form-label" for="usernameNew">Username</label>
+                        </div>
+
+                        <div class="form-outline mb-4">
+                            <input type="email" id="emailNew" class="form-control" autocomplete="off"/>
+                            <label class="form-label" for="emailNew">Email</label>
+                        </div>
+
+                        <div class="form-outline mb-4">
+                            <input type="password" id="pwNew" autocomplete="off" class="form-control" />
+                            <label class="form-label" for="pwNew">Password</label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-block text-light fa-lg gradient-custom-2" id="createAccount" type="button">Register</button>
+                            <a class="text-muted text-center mb-4" style="text-decoration: none;" href="#!">Login</a>
+                        </div>
+
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     
 
 
@@ -160,7 +249,8 @@
     <script type="module">
 
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js';
-        import { getDatabase, ref, push, set, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js';  
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, createUserWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js';
+        import { getDatabase, ref, push, set, onValue, remove, update } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js';  
 
         // Initialize Firebase
         const firebaseConfig = {
@@ -175,12 +265,106 @@
         };
 
         // Initialize Firebase app
-        const firebaseApp = initializeApp(firebaseConfig);
+        const firebase = initializeApp(firebaseConfig);
+
+        // Initialize Firebase Authentication and Realtime Database
+        const auth = getAuth(firebase);
+
+        // const database = firebase.database();
+        const database = getDatabase(firebase);
+
+        // Declare reference
+        let userRef, reference, foodRef, user, uid, foodKey, boost;
+
+         // Modal variable to log in
+         const newLogInModal = new bootstrap.Modal(document.getElementById('logInModal'), {
+            backdrop: false
+        })
+
+        const newRegisterModal = new bootstrap.Modal(document.getElementById('registerModal'), {
+            backdrop: false
+        })
+
+        document.querySelector('#register').addEventListener('click', function() {
+            newRegisterModal.show()
+        })
+
+        // const auth = getAuth();
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                // User is signed in, see docs for a list of available properties
+                // https://firebase.google.com/docs/reference/js/auth.user
+                uid = user.uid;
+                userRef = ref(database, 'users/' + uid)
+                reference = ref(database, 'users/' + uid + '/' + date);
+                console.log('logged in as: ' + uid);
+                newLogInModal.hide()
+                accessData()
+                accessCustomFood()
+            } else {
+                // User is signed out
+                newLogInModal.show()
+                console.log('no user');
+            }
+        });
+
+        
+        const loginEmailPassword = async () => {
+            const loginEmail = document.querySelector('#email').value;
+            const loginPassword = document.querySelector('#pw').value;
+            const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+            console.log('Logged In: ' + userCredential.user);
+        }
+
+        document.querySelector('#enterEmailPassword').addEventListener('click', loginEmailPassword);
+
+        // Create New Usesr
+        function register() {
+            const userName = document.querySelector('#usernameNew').value;
+            const loginEmail = document.querySelector('#emailNew').value;
+            const loginPassword = document.querySelector('#pwNew').value;
+
+
+            createUserWithEmailAndPassword(auth, loginEmail, loginPassword)
+            .then((userCredential) => {
+
+                // Signed up now add user to database
+                user = userCredential.user;
+
+                // database_ref = database.ref()
+                userRef = ref(database, 'users/' + user.uid)
+
+                const userData = {
+                    username: userName,
+                    email: loginEmail,
+                    last_login: Date.now()
+                }
+
+                // database_ref.child('users/' + user.uid).set(userData)
+                set(userRef, userData) 
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.log(errorCode, errorMessage)
+            });
+        }
+        
+        document.querySelector('#createAccount').addEventListener('click', register)    
+
+        document.querySelector('#signOut').addEventListener('click', function() {
+            signOut(auth).then(() => {
+                // Sign-out successful.
+                console.log('Logged Out');
+                }).catch((error) => {
+                // An error happened.
+                console.log('error' + error);    
+            });
+        })
 
         // Get a reference to the database service
-        const database = getDatabase(firebaseApp);
         let date = formatDate(new Date())
-        let reference = ref(database, 'user/margaret/' + date);
+        // let reference = ref(database, 'users/' + user.uid + '/' + date);
 
         // API Key for USDA Data
         const apiKey = 'ay7l5f8rFfytKJXBzBjlxRWsZXpWfotBUc3JteGi'; 
@@ -203,12 +387,14 @@
             backdrop: false
         })
 
+       
+
         // Add event listener to the date select menu
         document.getElementById('date').addEventListener('change', function() {
             // Handle the change event here
             const selectedOption = document.getElementById('date').value;
             date = document.getElementById('date').value;
-            reference = ref(database, 'user/margaret/' + date);
+            reference = ref(database, 'users/' + uid + '/' + date);
             accessData()
         });
 
@@ -236,7 +422,8 @@
                         protein: protein,
                         calories: calories,
                         serving: serving,
-                        unit: unit
+                        unit: unit,
+                        boost: 0
                     });
             clearNewFoods();       
         })
@@ -246,7 +433,7 @@
             document.getElementById('customFoodChoice').value = '';
         })
 
-        // Function to cleary new food modal
+        // Function to clear new food modal
         function clearNewFoods() {
             document.getElementById('newFoodName').value = '';
             document.getElementById('newFoodServing').value = '';
@@ -259,7 +446,8 @@
         // Function to store food log data in Firebase
         function storeData(data) {
             // Push data to a specific location in the database
-            reference = ref(database, 'user/margaret/' + date);
+            // reference = ref(database, 'user/margaret/' + date);
+            reference = ref(database, 'users/' + uid + '/' + date)
             const newPostRef = push(reference);
             set(newPostRef, data)
             .then(() => {
@@ -274,7 +462,7 @@
 
          // Function to store your own food item in database
          function addFood(item) {
-            const foodRef = ref(database, 'foodItems');
+            foodRef = ref(database, 'users/' + uid + '/foodItems');
             const newFoodRef = push(foodRef);
             set(newFoodRef, item)
             .then(() => {
@@ -304,13 +492,19 @@
 
         // Function to create datalist for your own food items
         function accessCustomFood() {
-            const foodRef = ref(database, 'foodItems');
+            foodRef = ref(database, 'users/' + uid + '/foodItems');
             onValue(foodRef, (snapshot) => {
                 const data = snapshot.val();
-                let foodTable = `<datalist id="customFoods">`;
+                
 
-                for (const key in data) {
-                    foodTable += `<option class="newFoodIndex" data-key="${key}" value="${data[key].food}"></option>`
+                // Sorting for most popular first
+                const foods = Object.entries(data)
+                foods.sort((a,b) => { if (parseInt(a[1].boost) > parseInt(b[1].boost)) {return -1} else if (parseInt(a[1].boost) < parseInt(b[1].boost)) {return 1} else {return 0}})    
+
+                let foodTable = `<datalist id="customFoods">`;
+                for (const food of foods) {
+                    // console.log(food)
+                    foodTable += `<option class="newFoodIndex" data-key="${food[0]}" value="${food[1].food}"></option>`
                 }
                 foodTable += `</datalist>`;
                 document.getElementById('customFoodChoice').innerHTML = foodTable;
@@ -322,7 +516,7 @@
                         document.getElementById('chooseAmtModalLabel').innerHTML = foodName;
                         newChooseModal.show()
 
-                        const foodRef = ref(database, 'foodItems' + '/' + key);
+                        foodRef = ref(database, 'users/' + uid + '/foodItems' + '/' + key);
 
                         onValue(foodRef, (snapshot) => {
                             const data = snapshot.val();
@@ -339,7 +533,9 @@
                             calories = data.calories;
                             newProtein = (serving / data.serving * data.protein).toFixed();
                             newCalories = (serving / data.serving * data.calories).toFixed();
-                            unit = data.unit;       
+                            unit = data.unit;  
+                            foodKey = key; 
+                            boost = data.boost;    
                         })
                     }
                 });
@@ -453,18 +649,24 @@
                 protein: protein,
                 calories: calories,
                 serving: serving,
-                unit: unit
+                unit: unit,
             });
+
+            // Also update boost for this food item
+            boost++
+            update(foodRef, {boost: boost})
+
+
             document.getElementById('customFoodChoice').value = "";
             accessData()
         })
   
 
-        accessCustomFood() // remove later?
+        // accessCustomFood() // remove later?
 
         // Get daily data from db and display
         function accessData() {
-            
+            // reference = ref(database, 'users/' + user.uid + '/' + date);
             onValue(reference, (snapshot) => {
                 let calories = 0;
                 let protein = 0;
@@ -491,7 +693,7 @@
                 let closebtns = document.getElementsByClassName("close");
                 for (let i = 0; i < closebtns.length; i++) {
                     closebtns[i].addEventListener("click", function() {
-                        const referencePath = `user/margaret/${date}/${this.dataset.id}`;
+                        const referencePath = `users/${uid}/${date}/${this.dataset.id}`;
                         // Remove data from Firebase
                         removeData(referencePath)
                             .then(() => {
@@ -504,7 +706,7 @@
             
         }
 
-        accessData()
+        // accessData()
 
         // Click event listener for the button ?????
         document.getElementById('getNutrition').addEventListener('click', async () => {
@@ -653,5 +855,6 @@
 
 
     </script>
+    <script type="text/javascript" src="login.js"></script>
 </body>
 </html>
