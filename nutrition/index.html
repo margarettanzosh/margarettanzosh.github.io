@@ -11,24 +11,34 @@
 <body>
     <div class="container">
 
-        <!-- <small>Hello Margaret</small> -->
-        <!-- <a class="text-muted fs-6" style="text-decoration: none;" id="signOut" href="#!">Log Out</a> -->
-        <!-- <button type="button" id="signOut" class="btn btn-outline-secondary btn-sm">Log Out</button> -->
         <ul class="nav justify-content-end">
+           
             <!-- <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Active</a>
-            </li> -->
-            <li class="nav-item">
               <a id="signOut" class="nav-link text-muted" href="#">Log Out</a>
+            </li> -->
+
+            <li class="nav-item dropdown" style="font-size: .9em;">
+                <a class="nav-link dropdown-toggle text-muted text-small" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Account</a>
+                <ul class="dropdown-menu" style="font-size: .9em;">
+                  <li><a class="dropdown-item" href="#">Account Into</a></li>
+                  <li><a id="signOut" class="dropdown-item" href="#">Log Out</a></li>
+                </ul>
             </li>
-          </ul>
+        </ul>
 
         <h1 class="text-center mt-4">Protein Tracker</h1>
         <select class="form-select" id="date"></select>
-        <div class="input-group mt-4 mb-4">
-            <input list="customFoods" type="search" class="form-control" id="customFoodChoice" placeholder="Search for your food" autocomplete="off" name="customFoodChoice" />
-            <button class="btn btn-outline-secondary" type="button" id="addFoodHere">Add Food</button>
-            <button class="btn btn-outline-secondary" type="button" id="getNutrition">Search USDA</button>
+
+        <div class="form-outline mb-3">
+            <input list="customFoods" type="search" id="customFoodChoice" class="form-control mt-4" autocomplete="off"/>
+            <label class="form-label" for="customFoodChoice">Search for your food</label>
+        </div>
+
+        <div class="input-group mb-4" id="searchAdd">
+
+            <!-- <input list="customFoods" type="search" class="form-control" id="customFoodChoice" placeholder="Search for your food" autocomplete="off" name="customFoodChoice" /> -->
+            <button class="btn btn-outline-danger" type="button" id="addFoodHere">Add Your Own Food</button>
+            <button class="btn btn-outline-danger" type="button" id="getNutrition">Search USDA</button>
         </div>
 
         <div id="nutritionalResult"></div>
@@ -40,16 +50,20 @@
         <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-            <h5 class="modal-title" id="foodChoiceModalLabel">Choose One</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="form-outline" style="margin-right: 20px;">
+                    <input type="text" id="usdaFoodChoice" class="form-control" autocomplete="off"/>
+                    <label class="form-label" for="usdaFoodChoice">Food to Search</label>
+                </div>
+                <button type="button" id="usdaSearch" style="padding-top: 5px; padding-bottom: 5px;" class="btn text-light fa-lg gradient-custom-2">Search USDA</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal-insert">
+                    <!-- Table goes here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
-            <div class="modal-body" id="modal-insert">
-                <!-- Table goes here -->
-            </div>
-            <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
         </div>
     </div>
 
@@ -58,7 +72,7 @@
         <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-            <h5 class="modal-title" id="addFoodModalLabel">Your New Food</h5>
+            <h5 class="modal-title" id="addFoodModalLabel">Add a Food to Your Food List</h5>
             <button type="button" id="closeNewFoodModal" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="mt-4">
@@ -124,7 +138,7 @@
                 </div>
             
                 <div class="modal-footer mb-0">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="saveNewFood">Save</button>
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" id="saveNewFood">Save</button>
                 </div>
             </div>
             
@@ -167,14 +181,12 @@
         </div>
     </div>
 
-
    <!-- Modal for Log In -->
     <div class="modal fade" id="logInModal" tabindex="-1" aria-labelledby="logInModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen" style="background-color: #eee; padding: 10%;">
             <div class="modal-content" class="pl-5 pr-5">
                 <h4 class="pt-5 pb-0 text-center" id="logInForm">Welcome to Protein Tracker</h4>
                 
-                <!-- <button type="button" id="closeLogInModal" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
                 <div style="padding: 40px;">
                     <form autocomplete="off" id="login">
                         <p>Please login to your account</p>
@@ -208,10 +220,10 @@
     <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen" style="background-color: #eee; padding: 10%;">
             <div class="modal-content" class="pl-5 pr-5">
-                <h4 class="pt-5 pb-0 text-center" id="logInForm">New Account</h4>
+                <h4 class="pt-5 pb-0 text-center" id="logInForm">Create an Account</h4>
                 
                 <div style="padding: 40px;">
-                    <form autocomplete="off" id="login">
+                    <form autocomplete="off" id="loginNew">
                         <p>Please complete to create your account</p>
 
                         <div class="form-outline mb-4">
@@ -231,7 +243,7 @@
 
                         <div class="d-grid gap-2">
                             <button class="btn btn-block text-light fa-lg gradient-custom-2" id="createAccount" type="button">Register</button>
-                            <a class="text-muted text-center mb-4" style="text-decoration: none;" href="#!">Login</a>
+                            <a class="text-muted text-center mb-4" id="regToLogin" style="text-decoration: none;" href="#!">Login</a>
                         </div>
 
                         
@@ -287,6 +299,11 @@
 
         document.querySelector('#register').addEventListener('click', function() {
             newRegisterModal.show()
+        })
+
+        document.querySelector('#regToLogin').addEventListener('click', function() {
+            newRegisterModal.hide()
+            newLogInModal.show()
         })
 
         // const auth = getAuth();
@@ -662,7 +679,6 @@
         })
   
 
-        // accessCustomFood() // remove later?
 
         // Get daily data from db and display
         function accessData() {
@@ -706,11 +722,16 @@
             
         }
 
-        // accessData()
+        document.getElementById('getNutrition').addEventListener('click', function() {
+            document.getElementById('usdaFoodChoice').value = '';
+            document.getElementById('modal-insert').innerHTML = '';
+            myModal.show();
+        })
+
 
         // Click event listener for the button ?????
-        document.getElementById('getNutrition').addEventListener('click', async () => {
-            foodName = document.getElementById('customFoodChoice').value;
+        document.getElementById('usdaSearch').addEventListener('click', async () => {
+            foodName = document.getElementById('usdaFoodChoice').value;
             
             try {
                 const nutritionalInfo = await fetchNutritionalInfo(foodName);
@@ -737,7 +758,7 @@
                     }
                     foodTable += `</table>`;
                     document.getElementById('modal-insert').innerHTML = foodTable;
-                    myModal.show();
+                    // myModal.show();
 
                     let modalRows = document.getElementsByClassName("foodIndex");
                     for (let i = 0; i < modalRows.length; i++) {
