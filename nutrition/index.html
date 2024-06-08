@@ -16,7 +16,7 @@
             <li class="nav-item dropdown" style="font-size: .9em;">
                 <a class="nav-link dropdown-toggle text-muted text-small" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Account</a>
                 <ul class="dropdown-menu" style="font-size: .9em;">
-                  <li><a class="dropdown-item" href="#">Account Into</a></li>
+                  <li><a id="account" class="dropdown-item" href="#">Account Into</a></li>
                   <li><a id="signOut" class="dropdown-item" href="#">Log Out</a></li>
                 </ul>
             </li>
@@ -39,6 +39,22 @@
 
         <div id="nutritionalResult"></div>
         <div id="dailyNutrition"></div>
+    </div>
+
+     <!-- Modal for account info-->
+     <div class="modal fade" id="accountInfoModal" tabindex="-1" aria-labelledby="accountInfoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                        <h5 class="modal-title">Account Info</h5>
+                        <button type="button" id="closeNewFoodModal" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="mt-3 modal-body">
+                    <p>You are signed in as <span id="accountEmail"></span></p>
+                </div>
+    
+            </div>
+        </div>
     </div>
     
     <!-- Modal for table of food choices-->
@@ -71,75 +87,58 @@
             <h5 class="modal-title" id="addFoodModalLabel">Add a Food to Your Food List</h5>
             <button type="button" id="closeNewFoodModal" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="mt-4">
+            <div class="mt-3">
 
-                <div class="row g-3 align-items-center mb-3">
-                    <div class="col-sm-3">
-                        <label for="newFoodName" class="col-form-label">Name of Food</label>
-                    </div>
-                    <div class="col-sm-8">
-                        <input type="text" id="newFoodName" class="form-control">
-                    </div>
-                   
-                </div>
+                <!--New Code -->
+                <div style="padding: 20px;">
+                    <form autocomplete="off">
 
-                <div class="row g-3 align-items-center mb-3">
-                    <div class="col-sm-3">
-                        <label for="newFoodServing" class="col-form-label">Serving</label>
-                    </div>
-                    <div class="col-sm-5">
-                        <input type="number" id="newFoodServing" class="form-control">
-                    </div>
-                    <div class="col-sm-4">
-                        <span id="servingHelpInline" class="form-text">
-                        Number of Units
-                        </span>
-                    </div>
-                </div>
+                        <div class="form-outline mb-4">
+                            <input type="text" id="newFoodName" class="form-control" autocomplete="off"/>
+                            <label class="form-label" for="newFoodName">Name of Food</label>
+                        </div>
 
-                <div class="row g-3 align-items-center mb-3">
-                    <div class="col-sm-3">
-                        <label for="newFoodUnit" class="col-form-label">Serving Unit</label>
-                    </div>
-                    <div class="col-8">
-                        <select id="newFoodUnit" class="form-select" aria-label="Serving Unit">
-                            <option value="g">Gram</option>
-                            <option value="oz">Ounce</option>
-                            <option value="tbsp">Tablespoon</option>
-                            <option value="tsp">Teaspoon</option>
-                            <option value="c">Cup</option>
-                        </select>
-                    </div>
-                    
-                </div>
+                        <div class="form-outline mb-4">
+                            <input type="number" id="newFoodServing" class="form-control" autocomplete="off"/>
+                            <label class="form-label" for="newFoodServing">Serving Size</label>
+                        </div>
 
-                <div class="row g-3 align-items-center mb-3">
-                    <div class="col-sm-3">
-                        <label for="newFoodProtein" class="col-form-label">Protein (g)</label>
-                    </div>
-                    <div class="col-sm-8">
-                        <input type="number" id="newFoodProtein" class="form-control">
-                    </div>
-                
-                </div>
+                        <div class="form-outline mb-4">
+                            <input list="myUnit" type="search" id="newFoodUnit" class="form-control mt-4" autocomplete="off"/>
 
-                <div class="row g-3 align-items-center mb-3">
-                    <div class="col-sm-3">
-                        <label for="newFoodCalories" class="col-form-label">Calories</label>
-                    </div>
-                    <div class="col-sm-8">
-                        <input type="number" id="newFoodCalories" class="form-control">
-                    </div>
-                    
+                                <datalist id="myUnit">
+                                    <option class="newFoodIndex" data-key="g" value="gram"></option>
+                                    <option class="newFoodIndex" data-key="oz" value="Ounce"></option>
+                                    <option class="newFoodIndex" data-key="tbsp" value="Tablespoon"></option>
+                                    <option class="newFoodIndex" data-key="tsp" value="Teaspoon"></option>
+                                    <option class="newFoodIndex" data-key="c" value="Cup"></option>
+                                </datalist>
+                            </input>
+                            <label class="form-label" for="newFoodUnit">Serving Unit</label>
+                        </div>
+
+                        
+                        <div class="form-outline mb-4">
+                            <input type="text" id="newFoodProtein" class="form-control" autocomplete="off"/>
+                            <label class="form-label" for="newFoodProtein">Protein in Grams</label>
+                        </div>
+
+                        <div class="form-outline mb-4">
+                            <input type="text" id="newFoodCalories" class="form-control" autocomplete="off" />
+                            <label class="form-label" for="newFoodCalories">Calories</label>
+                        </div>
+
+                        
+                    </form>
                 </div>
             
                 <div class="modal-footer mb-0">
-                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" id="saveNewFood">Save</button>
+                    <div id="saveFoodAlert"></div>
+                    <button type="button" class="btn btn-outline-danger" id="saveNewFood">Save</button>
                 </div>
             </div>
-            
         </div>
-        </div>
+      </div>
     </div>
 
     <!-- Modal for selecting your portion of your own food-->
@@ -154,13 +153,13 @@
 
 
                 <div class="input-group mt-4 mb-4">
-                    <input type="number" class="form-control" id="foodServing" placeholder="1">
+                    <input type="number" class="form-control" id="foodServing" placeholder="Serving Size">
                     <select id="chooseFoodUnit" class="form-select" aria-label="Choose Serving Unit">
-                        <option value="g">Gram</option>
-                        <option value="oz">Ounce</option>
-                        <option value="tbsp">Tablespoon</option>
-                        <option value="tsp">Teaspoon</option>
-                        <option value="c">Cup</option>
+                        <option value="g">Grams</option>
+                        <option value="oz">Ounces</option>
+                        <option value="tbsp">Tablespoons</option>
+                        <option value="tsp">Teaspoons</option>
+                        <option value="c">Cups</option>
                     </select>
                 </div>
         
@@ -168,7 +167,7 @@
                 <div><p >Calories: <span id="chooseCalories">2</span></p></div>
             
                 <div class="modal-footer mb-0">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="chooseSave">Log Food</button>
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" id="chooseSave">Log Food</button>
                     <div id="saveUSDAButton"></div>
                 </div>
             </div>
@@ -223,6 +222,8 @@
                 <div style="padding: 40px;">
                     <form autocomplete="off" id="loginNew">
                         <p>Please complete to create your account</p>
+                        <div id="registerAlert"></div>
+
 
                         <div class="form-outline mb-4">
                             <input type="text" id="usernameNew" class="form-control" autocomplete="off"/>
@@ -284,7 +285,7 @@
         const database = getDatabase(firebase);
 
         // Declare reference
-        let userRef, reference, foodRef, user, uid, foodKey, boost;
+        let userRef, reference, foodRef, user, uid, email, foodKey, boost;
 
          // Modal variable to log in
          const newLogInModal = new bootstrap.Modal(document.getElementById('logInModal'), {
@@ -292,6 +293,10 @@
         })
 
         const newRegisterModal = new bootstrap.Modal(document.getElementById('registerModal'), {
+            backdrop: false
+        })
+
+        const newAccountInfoModal = new bootstrap.Modal(document.querySelector('#accountInfoModal'), {
             backdrop: false
         })
 
@@ -304,16 +309,23 @@
             newLogInModal.show()
         })
 
+        document.querySelector('#account').addEventListener('click', function() {
+            document.querySelector('#accountEmail').innerHTML = email;
+            newAccountInfoModal.show()
+        })
+
         // const auth = getAuth();
         onAuthStateChanged(auth, user => {
             if (user) {
                 // User is signed in, see docs for a list of available properties
                 // https://firebase.google.com/docs/reference/js/auth.user
                 uid = user.uid;
+                email = user.email;
                 userRef = ref(database, 'users/' + uid)
                 reference = ref(database, 'users/' + uid + '/' + date);
                 console.log('logged in as: ' + uid);
                 newLogInModal.hide()
+                document.querySelector('#customFoodChoice').innerHTML = "";
                 accessData()
                 accessCustomFood()
             } else {
@@ -327,8 +339,8 @@
         const loginEmailPassword = async () => {
             const loginEmail = document.querySelector('#email').value;
             const loginPassword = document.querySelector('#pw').value;
-            const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword).
-                catch(function(error) {
+            const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
+                .catch(function(error) {
                     let errorMsg;
                    
                     if (error.code === 'auth/invalid-credential') {
@@ -377,13 +389,20 @@
                     last_login: Date.now()
                 }
 
-                // database_ref.child('users/' + user.uid).set(userData)
                 set(userRef, userData) 
+  
+                newRegisterModal.hide()
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 console.log(errorCode, errorMessage)
+                document.querySelector('#registerAlert').innerHTML = 
+                    `<div class="alert alert-danger alert-dismissible mb-4" style="height: 45px; padding-top: 10px" role="alert">
+                        <div>${errorCode}</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" style="padding-top: 10px" aria-label="Close"></button>
+                    </div>`
+
             });
         }
         
@@ -443,6 +462,7 @@
 
         // Add event listener to add new food button on opening page
         document.getElementById('addFoodHere').addEventListener('click', function() {
+            document.querySelector('#saveFoodAlert').innerHTML = '';
             newFoodModal.show()
         })
 
@@ -454,7 +474,17 @@
             unit = document.getElementById('newFoodUnit').value;
             protein = document.getElementById('newFoodProtein').value;
             calories = document.getElementById('newFoodCalories').value;
-            addFood({
+
+            if (!foodName || !serving || !unit || !protein || !calories) {
+                document.querySelector('#saveFoodAlert').innerHTML = 
+                    `<div class="alert alert-danger alert-dismissible mt-3" style="height: 45px; padding-top: 10px" role="alert">
+                        <div>Please complete to save</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" style="padding-top: 10px" aria-label="Close"></button>
+                    </div>`
+
+            }
+            else {
+                addFood({
                         food: foodName,
                         protein: protein,
                         calories: calories,
@@ -462,7 +492,9 @@
                         unit: unit,
                         boost: 0
                     });
-            clearNewFoods();       
+                newFoodModal.hide()    
+                clearNewFoods();       
+            }
         })
 
         document.getElementById('closeNewFoodModal').addEventListener('click', function() {
@@ -533,6 +565,10 @@
             onValue(foodRef, (snapshot) => {
                 const data = snapshot.val();
                 
+                // Check for new user with no data
+                if (!data) {
+                    return;
+                }
 
                 // Sorting for most popular first
                 const foods = Object.entries(data)
@@ -557,7 +593,7 @@
 
                         onValue(foodRef, (snapshot) => {
                             const data = snapshot.val();
-                            console.log(data)
+                            // console.log(data)
                             document.getElementById('chooseProtein').innerHTML = data.protein + " g";
                             document.getElementById('chooseCalories').innerHTML = data.calories + " cal"
 
@@ -819,7 +855,7 @@
                     serving = 100;
 
                     // Open modal to modify servings here
-                    document.getElementById('saveUSDAButton').innerHTML = `<button type="button" id="saveUSDAFood" class="btn btn-secondary">Save to My Foods</button>`
+                    document.getElementById('saveUSDAButton').innerHTML = `<button type="button" id="saveUSDAFood" class="btn btn-outline-danger">Save to My Foods</button>`
                     newChooseModal.show()
 
                     document.getElementById('chooseProtein').innerHTML = proteinPer100g + " g";
@@ -893,6 +929,12 @@
             dateDropdown.appendChild(option);
         });
 
+        const element = document.querySelector('form');
+        element.addEventListener('submit', event => {
+            event.preventDefault();
+            // actual logic, e.g. validate the form
+            console.log('Form submission cancelled.');
+        });
 
 
     </script>
