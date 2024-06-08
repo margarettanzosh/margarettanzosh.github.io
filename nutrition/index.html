@@ -9,14 +9,10 @@
     <title>Protein Content Checker</title>
 </head>
 <body>
+    <!-- Main page -->
     <div class="container">
 
         <ul class="nav justify-content-end">
-           
-            <!-- <li class="nav-item">
-              <a id="signOut" class="nav-link text-muted" href="#">Log Out</a>
-            </li> -->
-
             <li class="nav-item dropdown" style="font-size: .9em;">
                 <a class="nav-link dropdown-toggle text-muted text-small" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Account</a>
                 <ul class="dropdown-menu" style="font-size: .9em;">
@@ -50,11 +46,11 @@
         <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="form-outline" style="margin-right: 20px;">
+                <div class="form-outline" style="margin-right: 10px;">
                     <input type="text" id="usdaFoodChoice" class="form-control" autocomplete="off"/>
-                    <label class="form-label" for="usdaFoodChoice">Food to Search</label>
+                    <label class="form-label" for="usdaFoodChoice">Search USDA Database</label>
                 </div>
-                <button type="button" id="usdaSearch" style="padding-top: 5px; padding-bottom: 5px;" class="btn text-light fa-lg gradient-custom-2">Search USDA</button>
+                <button type="button" id="usdaSearch" style="padding-top: 5px; padding-bottom: 5px;" class="btn text-light fa-lg gradient-custom-2">Enter</button>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="modal-insert">
@@ -191,6 +187,8 @@
                     <form autocomplete="off" id="login">
                         <p>Please login to your account</p>
 
+                        <div id="loginAlert"></div>
+
                         <div class="form-outline mb-4">
                             <input type="email" id="email" class="form-control" autocomplete="off"/>
                             <label class="form-label" for="email">Email</label>
@@ -325,13 +323,35 @@
             }
         });
 
-        
+        // Try logging in
         const loginEmailPassword = async () => {
             const loginEmail = document.querySelector('#email').value;
             const loginPassword = document.querySelector('#pw').value;
-            const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
-            console.log('Logged In: ' + userCredential.user);
+            const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword).
+                catch(function(error) {
+                    let errorMsg;
+                   
+                    if (error.code === 'auth/invalid-credential') {
+                        errorMsg = 'Incorrect email or password'
+                    }
+                    else if (error.code === 'auth/invalid-email') {
+                        errorMsg = 'Invalid email'
+                    }
+                    else if (error.code === 'auth/missing-password') {
+                        errorMsg = 'Missing password'
+                    }
+                    else {
+                        errorMsg = error.code
+                    }
+
+                    document.querySelector('#loginAlert').innerHTML = 
+                    `<div class="alert alert-danger alert-dismissible mb-4" style="height: 45px; padding-top: 10px" role="alert">
+                        <div>${errorMsg}</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" style="padding-top: 10px" aria-label="Close"></button>
+                    </div>`
+                })            
         }
+        
 
         document.querySelector('#enterEmailPassword').addEventListener('click', loginEmailPassword);
 
