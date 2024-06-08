@@ -3,7 +3,7 @@
 }
 
 #usdaFoodChoice {
-    width: 400px;
+    width: 500px;
 }
 
 #dailyNutrition, #date {
@@ -23,7 +23,7 @@
         width: 100%;
     }
     #usdaFoodChoice {
-        width: 120px;
+        width: 300px;
     }
   }
 
