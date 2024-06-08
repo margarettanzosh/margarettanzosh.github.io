@@ -23,7 +23,7 @@
         width: 100%;
     }
     #usdaFoodChoice {
-        width: 300px;
+        max-width: 220px;
     }
   }
 
