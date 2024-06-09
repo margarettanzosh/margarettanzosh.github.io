@@ -10,6 +10,15 @@
     font-size: .9em;
 }
 
+#customFoodChoiceList {
+    font-size: .9em;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    background-color: rgba(255, 255, 255, 255);
+    z-index: 1;
+    opacity: 1;
+}
+
 #searchAdd {
     width: 100%;
 }
