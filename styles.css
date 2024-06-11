@@ -1,0 +1,678 @@
+#foodName, #foodServing {
+    width: 200px;
+}
+
+#usdaFoodChoice {
+    width: 500px;
+}
+
+#dailyNutrition, #date {
+    font-size: .9em;
+}
+
+#customFoodChoiceList {
+    font-size: .9em;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    background-color: rgba(255, 255, 255, 255);
+    z-index: 1;
+    opacity: 1;
+}
+
+#searchAdd {
+    width: 100%;
+}
+
+.container {
+    width: 60%;
+}
+
+@media only screen and (max-width: 1200px) {
+    .container {
+        width: 100%;
+    }
+    #usdaFoodChoice {
+        max-width: 220px;
+    }
+  }
+
+.modalPad {
+    padding: 10%;
+}
+
+.close {
+    padding: 12px 20px; 
+    font-weight: bold;
+}
+
+.close:hover {
+    background: #bbb;
+}
+
+#date {
+    width: 250px;
+    margin: auto;
+}
+
+.text-truncate:hover{
+    overflow: visible;        
+    white-space: normal;
+    height:auto;
+}
+
+.text-truncate {
+    overflow: hidden;
+    max-width: 200px;
+}
+
+.col-form-label {
+    margin-left: 16px;
+    font-size: 0.9em;
+}
+
+#customFoodChoice {
+    min-width: 50%;
+}
+
+#getNutrition, #addFoodHere {
+    width: 50%;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.portion {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.btn-outline-secondary {
+    border-color: #CFD4D9;
+}
+
+.gradient-custom-2 {
+    /* fallback for old browsers */
+    background: #fccb90;
+
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593);
+
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593);
+}
+
+@media (min-width: 768px) {
+    .gradient-form {
+    height: 100vh !important;
+    }
+}
+@media (min-width: 769px) {
+    .gradient-custom-2 {
+    border-top-right-radius: .3rem;
+    border-bottom-right-radius: .3rem;
+    }
+}
+        
+.form-control {
+    min-height: auto;
+    padding-top: 4px;
+    padding-bottom: 3.28px;
+    transition: all .1s linear
+}
+
+.form-control:focus {
+    box-shadow: none;
+    transition: all .1s linear;
+    border-color: #1266f1;
+    box-shadow: inset 0 0 0 1px #1266f1
+}
+
+.form-control.form-control-sm {
+    font-size: .775rem;
+    line-height: 1.5
+}
+
+.form-control.form-control-lg {
+    line-height: 2.15;
+    border-radius: .25rem
+}
+
+.form-outline {
+    position: relative
+}
+
+.form-outline .form-helper {
+    width: 100%;
+    position: absolute;
+    font-size: .875em;
+    color: #757575
+}
+
+.form-outline .form-helper .form-counter {
+    text-align: right
+}
+
+.form-outline .trailing {
+    position: absolute;
+    right: 10px;
+    left: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none
+}
+
+.form-outline .form-icon-trailing {
+    padding-right: 2rem!important
+}
+
+.form-outline .form-control {
+    min-height: auto;
+    padding: .33em .75em;
+    border: 0;
+    background: transparent;
+    transition: all .2s linear
+}
+
+.form-outline .form-control~.form-label {
+    position: absolute;
+    top: 0;
+    max-width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    left: .75rem;
+    padding-top: .37rem;
+    pointer-events: none;
+    transform-origin: 0 0;
+    transition: all .2s ease-out;
+    color: rgba(0,0,0,.6);
+    margin-bottom: 0
+}
+
+.form-outline .form-control~.form-notch {
+    display: flex;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    text-align: left;
+    pointer-events: none
+}
+
+.form-outline .form-control~.form-notch div {
+    pointer-events: none;
+    border: 1px solid #bdbdbd;
+    box-sizing: border-box;
+    background: transparent
+}
+
+.form-outline .form-control~.form-notch .form-notch-leading {
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: .5rem;
+    border-right: none;
+    border-radius: .25rem 0 0 .25rem
+}
+
+.form-outline .form-control~.form-notch .form-notch-middle {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: calc(100% - 1rem);
+    height: 100%;
+    border-right: none;
+    border-left: none
+}
+
+.form-outline .form-control~.form-notch .form-notch-trailing {
+    flex-grow: 1;
+    height: 100%;
+    border-left: none;
+    border-radius: 0 .25rem .25rem 0
+}
+
+.form-outline .form-control:not(.placeholder-active)::-moz-placeholder {
+    opacity: 0
+}
+
+.form-outline .form-control:not(.placeholder-active)::placeholder {
+    opacity: 0
+}
+
+.form-outline .form-control.active::-moz-placeholder,.form-outline .form-control:focus::-moz-placeholder {
+    opacity: 1
+}
+
+.form-outline .form-control.active::placeholder,.form-outline .form-control:focus::placeholder {
+    opacity: 1
+}
+
+.form-outline .form-control:focus {
+    box-shadow: none!important
+}
+
+.form-outline .form-control.active~.form-label,.form-outline .form-control:focus~.form-label {
+    transform: translateY(-1rem) translateY(.1rem) scale(.8)
+}
+
+.form-outline .form-control:focus~.form-label {
+    color: #1266f1
+}
+
+.form-outline .form-control.active~.form-notch .form-notch-middle,.form-outline .form-control:focus~.form-notch .form-notch-middle {
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    transition: all .2s linear
+}
+
+.form-outline .form-control:focus~.form-notch .form-notch-middle {
+    border-bottom: .125rem solid;
+    border-color: #1266f1
+}
+
+.form-outline .form-control.active~.form-notch .form-notch-leading,.form-outline .form-control:focus~.form-notch .form-notch-leading {
+    border-right: none;
+    transition: all .2s linear
+}
+
+.form-outline .form-control:focus~.form-notch .form-notch-leading {
+    border-top: .125rem solid #1266f1;
+    border-bottom: .125rem solid #1266f1;
+    border-left: .125rem solid #1266f1
+}
+
+.form-outline .form-control.active~.form-notch .form-notch-trailing,.form-outline .form-control:focus~.form-notch .form-notch-trailing {
+    border-left: none;
+    transition: all .2s linear
+}
+
+.form-outline .form-control:focus~.form-notch .form-notch-trailing {
+    border-top: .125rem solid #1266f1;
+    border-bottom: .125rem solid #1266f1;
+    border-right: .125rem solid #1266f1
+}
+
+.form-outline .form-control.disabled,.form-outline .form-control:disabled,.form-outline .form-control[readonly] {
+    background-color: #e9ecef
+}
+
+.form-outline .form-control.form-control-lg {
+    font-size: 1rem;
+    line-height: 2.15;
+    padding-left: .75em;
+    padding-right: .75em
+}
+
+.form-outline .form-control.form-control-lg~.form-label {
+    padding-top: .7rem
+}
+
+.form-outline .form-control.form-control-lg.active~.form-label,.form-outline .form-control.form-control-lg:focus~.form-label {
+    transform: translateY(-1.25rem) translateY(.1rem) scale(.8)
+}
+
+.form-outline .form-control.form-control-sm {
+    padding: .43em .99em .35em;
+    font-size: .775rem;
+    line-height: 1.6
+}
+
+.form-outline .form-control.form-control-sm~.form-label {
+    padding-top: .33rem;
+    font-size: .775rem
+}
+
+.form-outline .form-control.form-control-sm.active~.form-label,.form-outline .form-control.form-control-sm:focus~.form-label {
+    transform: translateY(-.85rem) translateY(.1rem) scale(.8)
+}
+
+.form-outline.form-white .form-control {
+    color: #fff
+}
+
+.form-outline.form-white .form-control~.form-label {
+    color: #fbfbfb
+}
+
+.form-outline.form-white .form-control~.form-notch div {
+    border-color: #fbfbfb
+}
+
+.form-outline.form-white .form-control:focus~.form-label {
+    color: #fff
+}
+
+.form-outline.form-white .form-control:focus~.form-notch .form-notch-middle {
+    border-color: #fff
+}
+
+.form-outline.form-white .form-control:focus~.form-notch .form-notch-leading {
+    border-top: .125rem solid #fff;
+    border-bottom: .125rem solid #fff;
+    border-left: .125rem solid #fff
+}
+
+.form-outline.form-white .form-control:focus~.form-notch .form-notch-trailing {
+    border-color: #fff
+}
+
+.form-outline.form-white .form-control::-moz-placeholder {
+    color: hsla(0,0%,100%,.7)
+}
+
+.form-outline.form-white .form-control::placeholder {
+    color: hsla(0,0%,100%,.7)
+}
+
+.form-outline.form-white .form-control.disabled,.form-outline.form-white .form-control:disabled,.form-outline.form-white .form-control[readonly] {
+    background-color: hsla(0,0%,100%,.45)
+}
+
+.select-input.form-control[readonly]:not([disabled]) {
+    background-color: transparent
+}
+
+.form-select {
+    transition: all .2s linear
+}
+
+.form-select:focus {
+    border-color: #1266f1;
+    outline: 0;
+    box-shadow: inset 0 0 0 1px #1266f1
+}
+
+.form-check {
+    min-height: 1.5rem
+}
+
+.form-check-input {
+    position: relative;
+    width: 1.125rem;
+    height: 1.125rem;
+    background-color: #fff;
+    border: .125rem solid #757575
+}
+
+.form-check-input:before {
+    content: "";
+    position: absolute;
+    box-shadow: 0 0 0 13px transparent;
+    border-radius: 50%;
+    width: .875rem;
+    height: .875rem;
+    background-color: transparent;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0)
+}
+
+.form-check-input:hover {
+    cursor: pointer
+}
+
+.form-check-input:hover:before {
+    opacity: .04;
+    box-shadow: 0 0 0 13px rgba(0,0,0,.6)
+}
+
+.form-check-input:focus {
+    box-shadow: none;
+    border-color: #757575;
+    transition: border-color .2s
+}
+
+.form-check-input:focus:before {
+    opacity: .12;
+    box-shadow: 0 0 0 13px rgba(0,0,0,.6);
+    transform: scale(1);
+    transition: box-shadow .2s,transform .2s
+}
+
+.form-check-input:checked {
+    border-color: #1266f1
+}
+
+.form-check-input:checked:before {
+    opacity: .16
+}
+
+.form-check-input:checked:after {
+    content: "";
+    position: absolute
+}
+
+.form-check-input:checked:focus {
+    border-color: #1266f1
+}
+
+.form-check-input:checked:focus:before {
+    box-shadow: 0 0 0 13px #1266f1;
+    transform: scale(1);
+    transition: box-shadow .2s,transform .2s
+}
+
+.form-check-input:indeterminate:focus:before {
+    box-shadow: 0 0 0 13px #1266f1
+}
+
+.form-check-input[type=checkbox] {
+    border-radius: .125rem;
+    margin-top: .19em;
+    margin-right: 8px
+}
+
+.form-check-input[type=checkbox]:focus:after {
+    content: "";
+    position: absolute;
+    width: .875rem;
+    height: .875rem;
+    z-index: 1;
+    display: block;
+    border-radius: 0;
+    background-color: #fff
+}
+
+.form-check-input[type=checkbox]:checked {
+    background-image: none;
+    background-color: #1266f1
+}
+
+.form-check-input[type=checkbox]:checked:after {
+    display: block;
+    transform: rotate(45deg) /*!rtl:ignore*/;
+    width: .375rem;
+    height: .8125rem;
+    border: .125rem solid #fff;
+    border-top: 0;
+    border-left: 0 /*!rtl:ignore*/;
+    margin-left: .25rem;
+    margin-top: -1px;
+    background-color: transparent
+}
+
+.form-check-input[type=checkbox]:checked:focus {
+    background-color: #1266f1
+}
+
+.form-check-input[type=checkbox]:indeterminate {
+    border-color: #1266f1
+}
+
+.form-check-input[type=radio] {
+    border-radius: 50%;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: .125em;
+    margin-right: 6px
+}
+
+.form-check-input[type=radio]:before {
+    width: 1rem;
+    height: 1rem
+}
+
+.form-check-input[type=radio]:after {
+    content: "";
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+    z-index: 1;
+    display: block;
+    border-radius: 50%;
+    background-color: #fff
+}
+
+.form-check-input[type=radio]:checked {
+    background-image: none;
+    background-color: #fff
+}
+
+.form-check-input[type=radio]:checked:after {
+    border-radius: 50%;
+    width: .625rem;
+    height: .625rem;
+    border-color: #1266f1;
+    background-color: #1266f1;
+    transition: border-color;
+    transform: translate(-50%,-50%);
+    position: absolute;
+    left: 50%;
+    top: 50%
+}
+
+.form-check-input[type=radio]:checked:focus {
+    background-color: #fff
+}
+
+.form-check-label:hover {
+    cursor: pointer
+}
+
+.form-switch .form-check-input {
+    background-image: none;
+    border-width: 0;
+    border-radius: .4375rem;
+    width: 2.25rem;
+    height: .875rem;
+    background-color: rgba(0,0,0,.38);
+    margin-top: .3em;
+    margin-right: 8px
+}
+
+
+button:hover {
+    box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.3); 
+} 
+
+button {
+    outline: 0;
+}
+
+.ripple-surface {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: bottom
+}
+
+.ripple-surface-unbound {
+    overflow: visible
+}
+
+.ripple-wave {
+    background-image: radial-gradient(circle,rgba(0,0,0,.2) 0,rgba(0,0,0,.3) 40%,rgba(0,0,0,.4) 50%,rgba(0,0,0,.5) 60%,transparent 70%);
+    border-radius: 50%;
+    opacity: .5;
+    pointer-events: none;
+    position: absolute;
+    touch-action: none;
+    transform: scale(0);
+    transition-property: transform,opacity;
+    transition-timing-function: cubic-bezier(0,0,.15,1),cubic-bezier(0,0,.15,1);
+    z-index: 999
+}
+
+.ripple-wave.active {
+    transform: scale(1);
+    opacity: 0
+}
+
+.btn .ripple-wave {
+    background-image: radial-gradient(circle,hsla(0,0%,100%,.2) 0,hsla(0,0%,100%,.3) 40%,hsla(0,0%,100%,.4) 50%,hsla(0,0%,100%,.5) 60%,hsla(0,0%,100%,0) 70%)
+}
+
+.ripple-surface-primary .ripple-wave {
+    background-image: radial-gradient(circle,rgba(18,102,241,.2) 0,rgba(18,102,241,.3) 40%,rgba(18,102,241,.4) 50%,rgba(18,102,241,.5) 60%,rgba(18,102,241,0) 70%)
+}
+
+.ripple-surface-secondary .ripple-wave {
+    background-image: radial-gradient(circle,rgba(178,60,253,.2) 0,rgba(178,60,253,.3) 40%,rgba(178,60,253,.4) 50%,rgba(178,60,253,.5) 60%,rgba(178,60,253,0) 70%)
+}
+
+.ripple-surface-success .ripple-wave {
+    background-image: radial-gradient(circle,rgba(0,183,74,.2) 0,rgba(0,183,74,.3) 40%,rgba(0,183,74,.4) 50%,rgba(0,183,74,.5) 60%,rgba(0,183,74,0) 70%)
+}
+
+.ripple-surface-info .ripple-wave {
+    background-image: radial-gradient(circle,rgba(57,192,237,.2) 0,rgba(57,192,237,.3) 40%,rgba(57,192,237,.4) 50%,rgba(57,192,237,.5) 60%,rgba(57,192,237,0) 70%)
+}
+
+.ripple-surface-warning .ripple-wave {
+    background-image: radial-gradient(circle,rgba(255,169,0,.2) 0,rgba(255,169,0,.3) 40%,rgba(255,169,0,.4) 50%,rgba(255,169,0,.5) 60%,rgba(255,169,0,0) 70%)
+}
+
+.ripple-surface-danger .ripple-wave {
+    background-image: radial-gradient(circle,rgba(249,49,84,.2) 0,rgba(249,49,84,.3) 40%,rgba(249,49,84,.4) 50%,rgba(249,49,84,.5) 60%,rgba(249,49,84,0) 70%)
+}
+
+.ripple-surface-light .ripple-wave {
+    background-image: radial-gradient(circle,hsla(0,0%,98.4%,.2) 0,hsla(0,0%,98.4%,.3) 40%,hsla(0,0%,98.4%,.4) 50%,hsla(0,0%,98.4%,.5) 60%,hsla(0,0%,98.4%,0) 70%)
+}
+
+.ripple-surface-dark .ripple-wave {
+    background-image: radial-gradient(circle,rgba(38,38,38,.2) 0,rgba(38,38,38,.3) 40%,rgba(38,38,38,.4) 50%,rgba(38,38,38,.5) 60%,rgba(38,38,38,0) 70%)
+}
+
+.ripple-surface-white .ripple-wave {
+    background-image: radial-gradient(circle,hsla(0,0%,100%,.2) 0,hsla(0,0%,100%,.3) 40%,hsla(0,0%,100%,.4) 50%,hsla(0,0%,100%,.5) 60%,hsla(0,0%,100%,0) 70%)
+}
+
+.ripple-surface-black .ripple-wave {
+    background-image: radial-gradient(circle,rgba(0,0,0,.2) 0,rgba(0,0,0,.3) 40%,rgba(0,0,0,.4) 50%,rgba(0,0,0,.5) 60%,transparent 70%)
+}
+
+#customFoodChoiceList li:hover {
+    background-color: #e9e9e9;
+}
+
+#customFoodChoiceList {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 1000;
+    overflow-y: auto;
+    max-height: 60vh;;
+}
+
+#customFoodChoiceList li {
+    padding: 4px 10px;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+
+    /* Remove default */
+    -webkit-appearance: none;
+  
+    /* Now your own custom styles */
+     height: 14px;
+     width: 14px;
+     display: block;
+     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAn0lEQVR42u3UMQrDMBBEUZ9WfQqDmm22EaTyjRMHAlM5K+Y7lb0wnUZPIKHlnutOa+25Z4D++MRBX98MD1V/trSppLKHqj9TTBWKcoUqffbUcbBBEhTjBOV4ja4l4OIAZThEOV6jHO8ARXD+gPPvKMABinGOrnu6gTNUawrcQKNCAQ7QeTxORzle3+sDfjJpPCqhJh7GixZq4rHcc9l5A9qZ+WeBhgEuAAAAAElFTkSuQmCC);
+    /* setup all the background tweaks for our custom icon */
+    background-repeat: no-repeat;
+  
+    /* icon size */
+    background-size: 14px;
+  
+  }
