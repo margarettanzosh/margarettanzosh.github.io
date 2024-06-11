@@ -26,15 +26,15 @@
         <select class="form-select" id="date"></select>
 
         <div class="form-outline mb-3">
-            <input type="text" id="customFoodChoice" class="form-control mt-4" autocomplete="off"/>
+            <input type="search" id="customFoodChoice" class="form-control mt-4" autocomplete="off"/>
             <label class="form-label" for="customFoodChoice">Search for your food</label>  
         </div>
-        <ul id="customFoodChoiceList" class="list-group" style="z-index: 1; position: fixed; margin-top: -15px;"></ul>
+        <ul id="customFoodChoiceList" class="list-group" style="position: fixed; margin-top: -16px;"></ul>
 
         <div class="input-group mb-4" id="searchAdd">
 
             <button class="btn btn-outline-danger" style="z-index: 0;" type="button" id="addFoodHere">Add Your Own Food</button>
-            <button class="btn btn-outline-danger" type="button" id="getNutrition">Search USDA</button>
+            <button class="btn btn-outline-danger" style="z-index: 0;" type="button" id="getNutrition">Search USDA</button>
         </div>
 
         <div id="nutritionalResult"></div>
@@ -285,7 +285,8 @@
         const database = getDatabase(firebase);
 
         // Declare reference
-        let userRef, reference, foodRef, user, uid, email, foodKey, boost;
+        let userRef, reference, foodRef, user, uid, email, foodKey;
+        let boost = 0; // in case any new USDA foods saved
 
          // Modal variable to log in
          const newLogInModal = new bootstrap.Modal(document.getElementById('logInModal'), {
@@ -325,7 +326,7 @@
                 reference = ref(database, 'users/' + uid + '/' + date);
                 console.log('logged in as: ' + uid);
                 newLogInModal.hide()
-                document.querySelector('#customFoodChoice').innerHTML = "";
+                input.innerHTML = "";
                 accessData()
                 accessCustomFood()
             } else {
@@ -426,6 +427,8 @@
 
         // Global variables
         let foodName, foodList, foodListFull, calories, protein, serving, unit, newFoodName, newUnit, newProtein, newCalories, newServing
+        const list = document.getElementById('customFoodChoiceList');
+        const input = document.querySelector('#customFoodChoice');
 
         // Create modal variable
         const myModal = new bootstrap.Modal(document.getElementById('foodChoiceModal'), {
@@ -490,7 +493,7 @@
                         unit: unit,
                         boost: 0
                     });
-                newFoodModal.hide()    
+                newFoodModal.hide()  
                 clearNewFoods();       
             }
         })
@@ -571,76 +574,96 @@
                 // Sorting for most popular first
                 const foods = Object.entries(data)
                 foods.sort((a,b) => { if (parseInt(a[1].boost) > parseInt(b[1].boost)) {return -1} else if (parseInt(a[1].boost) < parseInt(b[1].boost)) {return 1} else {return 0}})    
-                console.log(foods)
-                // let foodTable = `<datalist id="customFoods">`;
-                // for (const food of foods) {
-                //     // console.log(food)
-                //     foodTable += `<option class="newFoodIndex" data-key="${food[0]}" value="${food[1].food}"></option>`
-                // }
-                // foodTable += `</datalist>`;
+                
                 foodListFull = ''   
                 for (const food of foods) {
-                    foodListFull += `<li class="list-group-item" style="z-index: 1; height: 100%; width: 100% background-color: gray; opacity: 1;">${food[1].food}</li>`;
+                    foodListFull += `<li class="list-group-item myFoodIndex" data-key="${food[0]}">${food[1].food}</li>`;
                 }
-                foodListFull+= '</ul>'
                 
-                let input = document.querySelector('#customFoodChoice');
                 input.addEventListener('keyup', function(event) {
                     foodList = '';
                     if (input.value) {
                         for (const food of foods) {
-                            if (food[1].food.startsWith(input.value)) {
-                                foodList += `<li class="list-group-item" style="z-index: 1; height: 100%; background-color: white;">${food[1].food}</li>`;
+                            if (food[1].food.toLowerCase().includes(input.value.toLowerCase())) {
+                                foodList += `<li class="list-group-item myFoodIndex" data-key="${food[0]}">${food[1].food}</li>`;
                             }
                         }
                     }
-                    foodList+= '</ul>'
-                    document.getElementById('customFoodChoiceList').innerHTML = foodList;
+                    list.innerHTML = foodList;
+                    list.style.display = 'block';
+
+
+                    let myFoodRows = document.getElementsByClassName("myFoodIndex");
+                    for (let i = 0; i < myFoodRows.length; i++) {
+                        myFoodRows[i].addEventListener("click", function() {
+                            logFood(myFoodRows[i]);
+                        });
+                    }
                 })
+            })
+        }
                 
-                input.addEventListener('focus', function(event) { 
-                    document.getElementById('customFoodChoiceList').innerHTML = foodListFull;
-                })
-
-                input.addEventListener('focusout', function(event) { 
-                    document.getElementById('customFoodChoiceList').innerHTML = '';
-                })
-
-        
-
-                // $('#customFoodChoice').keyup(function(event) {
-                //     foodName = $(this).val();
-                //     console.log(foodName)
-                //     let key = $('#customFoods [value="' + foodName + '"]').data('key');
-                //     if (key) {
-                //         document.getElementById('chooseAmtModalLabel').innerHTML = foodName;
-                //         newChooseModal.show()
-
-                //         foodRef = ref(database, 'users/' + uid + '/foodItems' + '/' + key);
-
-                //         onValue(foodRef, (snapshot) => {
-                //             const data = snapshot.val();
-                //             // console.log(data)
-                //             document.getElementById('chooseProtein').innerHTML = data.protein + " g";
-                //             document.getElementById('chooseCalories').innerHTML = data.calories + " cal"
-
-                //             // Change select menu
-                //             $("#chooseFoodUnit").val(data.unit);
-
-                //             document.getElementById("foodServing").value = data.serving;
-                //             serving = document.getElementById("foodServing").value;
-                //             protein = data.protein;
-                //             calories = data.calories;
-                //             newProtein = (serving / data.serving * data.protein).toFixed();
-                //             newCalories = (serving / data.serving * data.calories).toFixed();
-                //             unit = data.unit;  
-                //             foodKey = key; 
-                //             boost = data.boost;    
-                //         })
-                //     }
-                // });
+        input.addEventListener('focus', function(event) { 
+            if (input.value) {
+                list.innerHTML = foodList;
+            } else {
+                list.innerHTML = foodListFull;
             }
-        )}
+            
+            list.style.display = 'block';
+            let myFoodRows = document.getElementsByClassName("myFoodIndex");
+            for (let i = 0; i < myFoodRows.length; i++) {
+                myFoodRows[i].addEventListener("click", function() {
+                    logFood(myFoodRows[i]);
+                });
+            }
+        })
+            
+
+        function logFood(food) {
+            
+            foodName = food.innerText;
+            console.log(foodName)
+
+            document.querySelector("#customFoodChoiceList").style.display = 'none'
+
+            let key = food.getAttribute('data-key');
+            if (key) {
+                document.getElementById('chooseAmtModalLabel').innerHTML = foodName;
+                newChooseModal.show()
+
+                foodRef = ref(database, 'users/' + uid + '/foodItems' + '/' + key);
+
+                onValue(foodRef, (snapshot) => {
+                    const data = snapshot.val();
+                    // console.log(data)
+                    document.getElementById('chooseProtein').innerHTML = data.protein + " g";
+                    document.getElementById('chooseCalories').innerHTML = data.calories + " cal"
+
+                    // Change select menu
+                    $("#chooseFoodUnit").val(data.unit);
+
+                    document.getElementById("foodServing").value = data.serving;
+                    serving = document.getElementById("foodServing").value;
+                    protein = data.protein;
+                    calories = data.calories;
+                    newProtein = (serving / data.serving * data.protein).toFixed();
+                    newCalories = (serving / data.serving * data.calories).toFixed();
+                    unit = data.unit;  
+                    foodKey = key; 
+                    boost = data.boost;    
+                })
+            }
+            
+        }
+
+        // Close the list when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target !== input && e.target !== list) {
+                list.style.display = 'none';
+            }
+        });
+        
 
         // Event listener to change protein and calories when serving amount changes
         document.getElementById("foodServing").addEventListener("change", function() {
@@ -841,7 +864,6 @@
                     }
                     foodTable += `</table>`;
                     document.getElementById('modal-insert').innerHTML = foodTable;
-                    // myModal.show();
 
                     let modalRows = document.getElementsByClassName("foodIndex");
                     for (let i = 0; i < modalRows.length; i++) {
@@ -873,12 +895,8 @@
                     });
 
                     // Calculate protein and calories based on serving size
-                    // let ounces = 1; // assumne one ounce serving to start
-                    // const servingSize = 28.3495 * ounces; // Convert oz to grams
                     const proteinPer100g = nutrients.protein || 0;
-                    // const proteinPerServing = (proteinPer100g / 100) * servingSize;
                     const caloriesPer100g = nutrients.energy || 0; // Assuming energy represents calories
-                    // const caloriesPerServing = (caloriesPer100g / 100) * servingSize;
                     serving = 100;
 
                     // Open modal to modify servings here
