@@ -467,11 +467,12 @@
         document.getElementById('saveNewFood').addEventListener('click', function() {
             foodName = document.getElementById('newFoodName').value;
             serving = document.getElementById('newFoodServing').value;
-            unit = document.getElementById('newFoodUnit').value;
+            let inputUnit = document.getElementById('newFoodUnit').value;
+            unit = Object.keys(servingUnits).find((key) => servingUnits[key] === inputUnit);
             protein = document.getElementById('newFoodProtein').value;
             calories = document.getElementById('newFoodCalories').value;
-
-            if (!foodName || !serving || !unit || !protein || !calories) {
+            
+            if (!foodName || !serving || !protein || !calories) {
                 document.querySelector('#saveFoodAlert').innerHTML = 
                     `<div class="alert alert-danger alert-dismissible mt-3" style="height: 45px; padding-top: 10px" role="alert">
                         <div>Please complete to save</div>
@@ -480,7 +481,7 @@
 
             }
             // Units must be one of given choices
-            else if (!Object.values(servingUnits).includes(unit)) {
+            else if (!unit) {
                 document.querySelector('#saveFoodAlert').innerHTML = 
                     `<div class="alert alert-danger alert-dismissible mt-3" style="height: 70px; padding-top: 10px" role="alert">
                         <div>Serving Unit must be "Gram", "Ounce", "Tablespoon", "Teaspoon" or "Cup"</div>
