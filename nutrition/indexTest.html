@@ -104,18 +104,11 @@
                         </div>
 
                         <div class="form-outline mb-4">
-                            <input list="myUnit" type="search" id="newFoodUnit" class="form-control mt-4" autocomplete="off"/>
-
-                                <datalist id="myUnit">
-                                    <option class="newFoodIndex" data-key="g" value="gram"></option>
-                                    <option class="newFoodIndex" data-key="oz" value="Ounce"></option>
-                                    <option class="newFoodIndex" data-key="tbsp" value="Tablespoon"></option>
-                                    <option class="newFoodIndex" data-key="tsp" value="Teaspoon"></option>
-                                    <option class="newFoodIndex" data-key="c" value="Cup"></option>
-                                </datalist>
-                            </input>
+                            <input type="search" id="newFoodUnit" class="form-control mt-4" autocomplete="off"/>
                             <label class="form-label" for="newFoodUnit">Serving Unit</label>
                         </div>
+                        <ul id="myUnit" class="list-group" style="position: fixed; margin-top: -23px;">
+                        </ul>
 
                         
                         <div class="form-outline mb-4">
@@ -429,6 +422,8 @@
         let foodName, foodList, foodListFull, calories, protein, serving, unit, newFoodName, newUnit, newProtein, newCalories, newServing
         const list = document.getElementById('customFoodChoiceList');
         const input = document.querySelector('#customFoodChoice');
+        const servingUnits = {'g': 'Gram', 'oz': 'Ounce', 'tbsp': 'Tablespoon', 'tsp': 'Teaspoon', 'c': 'Cup'};
+        // const servingUnits = {'Gram': 'g', 'Ounce': 'oz', 'Tablespoon': 'tbsp', 'Teaspoon': 'tsp', 'Cup': 'c'};
 
         // Create modal variable
         const myModal = new bootstrap.Modal(document.getElementById('foodChoiceModal'), {
@@ -484,6 +479,15 @@
                     </div>`
 
             }
+            // Units must be one of given choices
+            else if (!Object.values(servingUnits).includes(unit)) {
+                document.querySelector('#saveFoodAlert').innerHTML = 
+                    `<div class="alert alert-danger alert-dismissible mt-3" style="height: 70px; padding-top: 10px" role="alert">
+                        <div>Serving Unit must be "Gram", "Ounce", "Tablespoon", "Teaspoon" or "Cup"</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" style="padding-top: 10px" aria-label="Close"></button>
+                    </div>`
+
+            }
             else {
                 addFood({
                         food: foodName,
@@ -508,6 +512,7 @@
             document.getElementById('newFoodName').value = '';
             document.getElementById('newFoodServing').value = '';
             document.getElementById('newFoodUnit').value = '';
+            document.querySelector('#myUnit').style.display = 'none';
             document.getElementById('newFoodProtein').value = '';
             document.getElementById('newFoodCalories').value = '';        
         }
@@ -560,7 +565,7 @@
                 });
         }
 
-        // Function to create datalist for your own food items
+        // Function to create custom autocompelte list for your own food items
         function accessCustomFood() {
             foodRef = ref(database, 'users/' + uid + '/foodItems');
             onValue(foodRef, (snapshot) => {
@@ -625,7 +630,7 @@
             foodName = food.innerText;
             console.log(foodName)
 
-            document.querySelector("#customFoodChoiceList").style.display = 'none'
+            list.style.display = 'none'
 
             let key = food.getAttribute('data-key');
             if (key) {
@@ -662,6 +667,10 @@
             if (e.target !== input && e.target !== list) {
                 list.style.display = 'none';
             }
+            if (e.target !== input && e.target !== document.querySelector('#myUnit') && e.target !== document.querySelector('#newFoodUnit')) {
+                document.querySelector('#myUnit').style.display = 'none';
+            }
+
         });
         
 
@@ -980,6 +989,47 @@
             // actual logic, e.g. validate the form
             console.log('Form submission cancelled.');
         });
+
+        document.querySelector('#newFoodUnit').addEventListener('keyup', function(event) {
+            
+            if (document.querySelector('#newFoodUnit').value) {
+                let myUnitList = '';
+                for (const servingUnit in servingUnits) {
+                    if (servingUnits[servingUnit].toLowerCase().includes(document.querySelector('#newFoodUnit').value.toLowerCase())) {
+                        myUnitList += `<li class="list-group-item newFoodIndex" data-key="${servingUnit}">${servingUnits[servingUnit]}</li>`;
+                    }
+                }
+                document.querySelector('#myUnit').innerHTML = myUnitList;
+                document.querySelector('#myUnit').style.display = 'block';
+
+                let servingRows = document.getElementsByClassName("newFoodIndex");
+                for (let i = 0; i < servingRows.length; i++) {
+                    servingRows[i].addEventListener("click", function() {
+                        document.querySelector('#newFoodUnit').value = servingRows[i].innerText;
+                        document.querySelector('#newFoodUnit').focus();
+                    });
+                }
+            }
+        })
+
+        document.querySelector('#newFoodUnit').addEventListener('focus', function(event) { 
+            let myUnitList = '';
+
+            for (const servingUnit in servingUnits) {
+                myUnitList += `<li class="list-group-item newFoodIndex" data-key="${servingUnit}">${servingUnits[servingUnit]}</li>`;
+            }
+            
+            document.querySelector('#myUnit').innerHTML = myUnitList;
+            document.querySelector('#myUnit').style.display = 'block';
+            
+            let servingRows = document.getElementsByClassName("newFoodIndex");
+            for (let i = 0; i < servingRows.length; i++) {
+                servingRows[i].addEventListener("click", function() {
+                    document.querySelector('#newFoodUnit').value = servingRows[i].innerText;
+                    document.querySelector('#newFoodUnit').focus();
+                });
+            }
+        })
 
 
     </script>
