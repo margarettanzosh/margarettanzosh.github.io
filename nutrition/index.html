@@ -26,15 +26,15 @@
         <select class="form-select" id="date"></select>
 
         <div class="form-outline mb-3">
-            <input list="customFoods" type="search" id="customFoodChoice" class="form-control mt-4" autocomplete="off"/>
-            <label class="form-label" for="customFoodChoice">Search for your food</label>
+            <input type="search" id="customFoodChoice" class="form-control mt-4" autocomplete="off"/>
+            <label class="form-label" for="customFoodChoice">Search for your food</label>  
         </div>
+        <ul id="customFoodChoiceList" class="list-group" style="position: fixed; margin-top: -16px;"></ul>
 
         <div class="input-group mb-4" id="searchAdd">
 
-            <!-- <input list="customFoods" type="search" class="form-control" id="customFoodChoice" placeholder="Search for your food" autocomplete="off" name="customFoodChoice" /> -->
-            <button class="btn btn-outline-danger" type="button" id="addFoodHere">Add Your Own Food</button>
-            <button class="btn btn-outline-danger" type="button" id="getNutrition">Search USDA</button>
+            <button class="btn btn-outline-danger" style="z-index: 0;" type="button" id="addFoodHere">Add Your Own Food</button>
+            <button class="btn btn-outline-danger" style="z-index: 0;" type="button" id="getNutrition">Search USDA</button>
         </div>
 
         <div id="nutritionalResult"></div>
@@ -104,18 +104,11 @@
                         </div>
 
                         <div class="form-outline mb-4">
-                            <input list="myUnit" type="search" id="newFoodUnit" class="form-control mt-4" autocomplete="off"/>
-
-                                <datalist id="myUnit">
-                                    <option class="newFoodIndex" data-key="g" value="gram"></option>
-                                    <option class="newFoodIndex" data-key="oz" value="Ounce"></option>
-                                    <option class="newFoodIndex" data-key="tbsp" value="Tablespoon"></option>
-                                    <option class="newFoodIndex" data-key="tsp" value="Teaspoon"></option>
-                                    <option class="newFoodIndex" data-key="c" value="Cup"></option>
-                                </datalist>
-                            </input>
+                            <input type="search" id="newFoodUnit" class="form-control mt-4" autocomplete="off"/>
                             <label class="form-label" for="newFoodUnit">Serving Unit</label>
                         </div>
+                        <ul id="myUnit" class="list-group" style="position: fixed; margin-top: -23px;">
+                        </ul>
 
                         
                         <div class="form-outline mb-4">
@@ -285,7 +278,8 @@
         const database = getDatabase(firebase);
 
         // Declare reference
-        let userRef, reference, foodRef, user, uid, email, foodKey, boost;
+        let userRef, reference, foodRef, user, uid, email, foodKey;
+        let boost = 0; // in case any new USDA foods saved
 
          // Modal variable to log in
          const newLogInModal = new bootstrap.Modal(document.getElementById('logInModal'), {
@@ -325,7 +319,7 @@
                 reference = ref(database, 'users/' + uid + '/' + date);
                 console.log('logged in as: ' + uid);
                 newLogInModal.hide()
-                document.querySelector('#customFoodChoice').innerHTML = "";
+                input.innerHTML = "";
                 accessData()
                 accessCustomFood()
             } else {
@@ -420,13 +414,16 @@
 
         // Get a reference to the database service
         let date = formatDate(new Date())
-        // let reference = ref(database, 'users/' + user.uid + '/' + date);
 
         // API Key for USDA Data
         const apiKey = 'ay7l5f8rFfytKJXBzBjlxRWsZXpWfotBUc3JteGi'; 
 
         // Global variables
-        let foodName, calories, protein, serving, unit, newFoodName, newUnit, newProtein, newCalories, newServing
+        let foodName, foodList, foodListFull, calories, protein, serving, unit, newFoodName, newUnit, newProtein, newCalories, newServing
+        const list = document.getElementById('customFoodChoiceList');
+        const input = document.querySelector('#customFoodChoice');
+        const servingUnits = {'g': 'Gram', 'oz': 'Ounce', 'tbsp': 'Tablespoon', 'tsp': 'Teaspoon', 'c': 'Cup'};
+        // const servingUnits = {'Gram': 'g', 'Ounce': 'oz', 'Tablespoon': 'tbsp', 'Teaspoon': 'tsp', 'Cup': 'c'};
 
         // Create modal variable
         const myModal = new bootstrap.Modal(document.getElementById('foodChoiceModal'), {
@@ -444,7 +441,6 @@
         })
 
        
-
         // Add event listener to the date select menu
         document.getElementById('date').addEventListener('change', function() {
             // Handle the change event here
@@ -471,14 +467,24 @@
         document.getElementById('saveNewFood').addEventListener('click', function() {
             foodName = document.getElementById('newFoodName').value;
             serving = document.getElementById('newFoodServing').value;
-            unit = document.getElementById('newFoodUnit').value;
+            let inputUnit = document.getElementById('newFoodUnit').value;
+            unit = Object.keys(servingUnits).find((key) => servingUnits[key] === inputUnit);
             protein = document.getElementById('newFoodProtein').value;
             calories = document.getElementById('newFoodCalories').value;
-
-            if (!foodName || !serving || !unit || !protein || !calories) {
+            
+            if (!foodName || !serving || !protein || !calories) {
                 document.querySelector('#saveFoodAlert').innerHTML = 
                     `<div class="alert alert-danger alert-dismissible mt-3" style="height: 45px; padding-top: 10px" role="alert">
                         <div>Please complete to save</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" style="padding-top: 10px" aria-label="Close"></button>
+                    </div>`
+
+            }
+            // Units must be one of given choices
+            else if (!unit) {
+                document.querySelector('#saveFoodAlert').innerHTML = 
+                    `<div class="alert alert-danger alert-dismissible mt-3" style="height: 70px; padding-top: 10px" role="alert">
+                        <div>Serving Unit must be "Gram", "Ounce", "Tablespoon", "Teaspoon" or "Cup"</div>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" style="padding-top: 10px" aria-label="Close"></button>
                     </div>`
 
@@ -492,7 +498,7 @@
                         unit: unit,
                         boost: 0
                     });
-                newFoodModal.hide()    
+                newFoodModal.hide()  
                 clearNewFoods();       
             }
         })
@@ -507,6 +513,7 @@
             document.getElementById('newFoodName').value = '';
             document.getElementById('newFoodServing').value = '';
             document.getElementById('newFoodUnit').value = '';
+            document.querySelector('#myUnit').style.display = 'none';
             document.getElementById('newFoodProtein').value = '';
             document.getElementById('newFoodCalories').value = '';        
         }
@@ -559,7 +566,7 @@
                 });
         }
 
-        // Function to create datalist for your own food items
+        // Function to create custom autocompelte list for your own food items
         function accessCustomFood() {
             foodRef = ref(database, 'users/' + uid + '/foodItems');
             onValue(foodRef, (snapshot) => {
@@ -573,47 +580,100 @@
                 // Sorting for most popular first
                 const foods = Object.entries(data)
                 foods.sort((a,b) => { if (parseInt(a[1].boost) > parseInt(b[1].boost)) {return -1} else if (parseInt(a[1].boost) < parseInt(b[1].boost)) {return 1} else {return 0}})    
-
-                let foodTable = `<datalist id="customFoods">`;
+                
+                foodListFull = ''   
                 for (const food of foods) {
-                    // console.log(food)
-                    foodTable += `<option class="newFoodIndex" data-key="${food[0]}" value="${food[1].food}"></option>`
+                    foodListFull += `<li class="list-group-item myFoodIndex" data-key="${food[0]}">${food[1].food}</li>`;
                 }
-                foodTable += `</datalist>`;
-                document.getElementById('customFoodChoice').innerHTML = foodTable;
-
-                $('#customFoodChoice').keyup(function(event) {
-                    foodName = $(this).val();
-                    let key = $('#customFoods [value="' + foodName + '"]').data('key');
-                    if (key) {
-                        document.getElementById('chooseAmtModalLabel').innerHTML = foodName;
-                        newChooseModal.show()
-
-                        foodRef = ref(database, 'users/' + uid + '/foodItems' + '/' + key);
-
-                        onValue(foodRef, (snapshot) => {
-                            const data = snapshot.val();
-                            // console.log(data)
-                            document.getElementById('chooseProtein').innerHTML = data.protein + " g";
-                            document.getElementById('chooseCalories').innerHTML = data.calories + " cal"
-
-                            // Change select menu
-                            $("#chooseFoodUnit").val(data.unit);
-
-                            document.getElementById("foodServing").value = data.serving;
-                            serving = document.getElementById("foodServing").value;
-                            protein = data.protein;
-                            calories = data.calories;
-                            newProtein = (serving / data.serving * data.protein).toFixed();
-                            newCalories = (serving / data.serving * data.calories).toFixed();
-                            unit = data.unit;  
-                            foodKey = key; 
-                            boost = data.boost;    
-                        })
+                
+                input.addEventListener('keyup', function(event) {
+                    foodList = '';
+                    if (input.value) {
+                        for (const food of foods) {
+                            if (food[1].food.toLowerCase().includes(input.value.toLowerCase())) {
+                                foodList += `<li class="list-group-item myFoodIndex" data-key="${food[0]}">${food[1].food}</li>`;
+                            }
+                        }
                     }
+                    list.innerHTML = foodList;
+                    list.style.display = 'block';
+
+
+                    let myFoodRows = document.getElementsByClassName("myFoodIndex");
+                    for (let i = 0; i < myFoodRows.length; i++) {
+                        myFoodRows[i].addEventListener("click", function() {
+                            logFood(myFoodRows[i]);
+                        });
+                    }
+                })
+            })
+        }
+                
+        input.addEventListener('focus', function(event) { 
+            if (input.value) {
+                list.innerHTML = foodList;
+            } else {
+                list.innerHTML = foodListFull;
+            }
+            
+            list.style.display = 'block';
+            let myFoodRows = document.getElementsByClassName("myFoodIndex");
+            for (let i = 0; i < myFoodRows.length; i++) {
+                myFoodRows[i].addEventListener("click", function() {
+                    logFood(myFoodRows[i]);
                 });
             }
-        )}
+        })
+            
+
+        function logFood(food) {
+            
+            foodName = food.innerText;
+            console.log(foodName)
+
+            list.style.display = 'none'
+
+            let key = food.getAttribute('data-key');
+            if (key) {
+                document.getElementById('chooseAmtModalLabel').innerHTML = foodName;
+                newChooseModal.show()
+
+                foodRef = ref(database, 'users/' + uid + '/foodItems' + '/' + key);
+
+                onValue(foodRef, (snapshot) => {
+                    const data = snapshot.val();
+                    // console.log(data)
+                    document.getElementById('chooseProtein').innerHTML = data.protein + " g";
+                    document.getElementById('chooseCalories').innerHTML = data.calories + " cal"
+
+                    // Change select menu
+                    $("#chooseFoodUnit").val(data.unit);
+
+                    document.getElementById("foodServing").value = data.serving;
+                    serving = document.getElementById("foodServing").value;
+                    protein = data.protein;
+                    calories = data.calories;
+                    newProtein = (serving / data.serving * data.protein).toFixed();
+                    newCalories = (serving / data.serving * data.calories).toFixed();
+                    unit = data.unit;  
+                    foodKey = key; 
+                    boost = data.boost;    
+                })
+            }
+            
+        }
+
+        // Close the list when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target !== input && e.target !== list) {
+                list.style.display = 'none';
+            }
+            if (e.target !== input && e.target !== document.querySelector('#myUnit') && e.target !== document.querySelector('#newFoodUnit')) {
+                document.querySelector('#myUnit').style.display = 'none';
+            }
+
+        });
+        
 
         // Event listener to change protein and calories when serving amount changes
         document.getElementById("foodServing").addEventListener("change", function() {
@@ -814,7 +874,6 @@
                     }
                     foodTable += `</table>`;
                     document.getElementById('modal-insert').innerHTML = foodTable;
-                    // myModal.show();
 
                     let modalRows = document.getElementsByClassName("foodIndex");
                     for (let i = 0; i < modalRows.length; i++) {
@@ -846,12 +905,8 @@
                     });
 
                     // Calculate protein and calories based on serving size
-                    // let ounces = 1; // assumne one ounce serving to start
-                    // const servingSize = 28.3495 * ounces; // Convert oz to grams
                     const proteinPer100g = nutrients.protein || 0;
-                    // const proteinPerServing = (proteinPer100g / 100) * servingSize;
                     const caloriesPer100g = nutrients.energy || 0; // Assuming energy represents calories
-                    // const caloriesPerServing = (caloriesPer100g / 100) * servingSize;
                     serving = 100;
 
                     // Open modal to modify servings here
@@ -935,6 +990,47 @@
             // actual logic, e.g. validate the form
             console.log('Form submission cancelled.');
         });
+
+        document.querySelector('#newFoodUnit').addEventListener('keyup', function(event) {
+            
+            if (document.querySelector('#newFoodUnit').value) {
+                let myUnitList = '';
+                for (const servingUnit in servingUnits) {
+                    if (servingUnits[servingUnit].toLowerCase().includes(document.querySelector('#newFoodUnit').value.toLowerCase())) {
+                        myUnitList += `<li class="list-group-item newFoodIndex" data-key="${servingUnit}">${servingUnits[servingUnit]}</li>`;
+                    }
+                }
+                document.querySelector('#myUnit').innerHTML = myUnitList;
+                document.querySelector('#myUnit').style.display = 'block';
+
+                let servingRows = document.getElementsByClassName("newFoodIndex");
+                for (let i = 0; i < servingRows.length; i++) {
+                    servingRows[i].addEventListener("click", function() {
+                        document.querySelector('#newFoodUnit').value = servingRows[i].innerText;
+                        document.querySelector('#newFoodUnit').focus();
+                    });
+                }
+            }
+        })
+
+        document.querySelector('#newFoodUnit').addEventListener('focus', function(event) { 
+            let myUnitList = '';
+
+            for (const servingUnit in servingUnits) {
+                myUnitList += `<li class="list-group-item newFoodIndex" data-key="${servingUnit}">${servingUnits[servingUnit]}</li>`;
+            }
+            
+            document.querySelector('#myUnit').innerHTML = myUnitList;
+            document.querySelector('#myUnit').style.display = 'block';
+            
+            let servingRows = document.getElementsByClassName("newFoodIndex");
+            for (let i = 0; i < servingRows.length; i++) {
+                servingRows[i].addEventListener("click", function() {
+                    document.querySelector('#newFoodUnit').value = servingRows[i].innerText;
+                    document.querySelector('#newFoodUnit').focus();
+                });
+            }
+        })
 
 
     </script>
